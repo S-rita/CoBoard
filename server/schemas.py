@@ -1,6 +1,6 @@
 from datetime import date
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 # ABookmark Pydantic models
 class ABookmarkBase(BaseModel):
@@ -12,7 +12,7 @@ class ABookmarkCreate(ABookmarkBase):
 
 class ABookmark(ABookmarkBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Access Pydantic models
 class AccessBase(BaseModel):
@@ -24,7 +24,7 @@ class AccessCreate(AccessBase):
 
 class Access(AccessBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # AnonymousUser Pydantic models
 class AnonymousUserBase(BaseModel):
@@ -37,7 +37,7 @@ class AnonymousUserCreate(AnonymousUserBase):
 
 class AnonymousUser(AnonymousUserBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Comment Pydantic models
 class CommentBase(BaseModel):
@@ -51,7 +51,7 @@ class Comment(CommentBase):
     comment_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Forum Pydantic models
 class ForumBase(BaseModel):
@@ -59,7 +59,7 @@ class ForumBase(BaseModel):
     description: Optional[str] = None
     creator_id: str
     created_time: Optional[date] = Field(default_factory=date.today)  # Capture only the date
-    icon: Optional[bytes] = None
+    icon: Optional[str] = Field(None, description="Base64 encoded icon")
     wallpaper: Optional[str] = "#D9D9D9"
     font: Optional[int] = 0
     sort_by: Optional[int] = 0
@@ -73,7 +73,7 @@ class Forum(ForumBase):
     forum_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ForumTag Pydantic models
 class ForumTagBase(BaseModel):
@@ -85,7 +85,7 @@ class ForumTagCreate(ForumTagBase):
 
 class ForumTag(ForumTagBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ForumTopic Pydantic models
 class ForumTopicBase(BaseModel):
@@ -97,7 +97,7 @@ class ForumTopicCreate(ForumTopicBase):
 
 class ForumTopic(ForumTopicBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Post Pydantic models
 class PostBase(BaseModel):
@@ -112,7 +112,7 @@ class Post(PostBase):
     post_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # PostComment Pydantic models
 class PostCommentBase(BaseModel):
@@ -124,7 +124,7 @@ class PostCommentCreate(PostCommentBase):
 
 class PostComment(PostCommentBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # SBookmark Pydantic models
 class SBookmarkBase(BaseModel):
@@ -136,7 +136,7 @@ class SBookmarkCreate(SBookmarkBase):
 
 class SBookmark(SBookmarkBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # SEUser Pydantic models
 class SEUserBase(BaseModel):
@@ -150,7 +150,7 @@ class SEUserCreate(SEUserBase):
 
 class SEUser(SEUserBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Tag Pydantic models
 class TagBase(BaseModel):
@@ -163,7 +163,7 @@ class Tag(TagBase):
     tag_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Topic Pydantic models
 class TopicBase(BaseModel):
@@ -176,7 +176,7 @@ class Topic(TopicBase):
     topic_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # TopicPost Pydantic models
 class TopicPostBase(BaseModel):
@@ -188,4 +188,10 @@ class TopicPostCreate(TopicPostBase):
 
 class TopicPost(TopicPostBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class ForumResponse(Forum):
+    topics: List[Topic]
+
+    class Config:
+        from_attributes = True

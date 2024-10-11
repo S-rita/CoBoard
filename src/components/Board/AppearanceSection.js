@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 
-const AppearanceSection = ({ handleSortBy }) => {
-  const [selectedFont, setSelectedFont] = useState('');
+const AppearanceSection = ({ setWallpaper, setFont, setSortBy, wallpaper, font, sortby }) => {
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ text: 'Select Sort', icon: null });
-  const [selectedColor, setSelectedColor] = useState('#D9D9D9'); // State for selected color
 
-  const handleFontSelection = (font) => {
-    setSelectedFont(font);
-  };
-
-  const handleSortSelection = (type, text, icon) => {
-    handleSortBy(type);
+  const handleSortSelection = (sortby, text, icon) => {
+    setSortBy(sortby); // Send the sort selection back to parent
     setSelectedSort({ text, icon });
     setSortDropdownVisible(false);
   };
@@ -28,14 +22,16 @@ const AppearanceSection = ({ handleSortBy }) => {
             <input 
               type="color" 
               className="w-44 h-28 rounded-xl mr-4 border-0 cursor-pointer" 
-              defaultValue={selectedColor} 
-              onChange={(e) => setSelectedColor(e.target.value)} // Update color state on change
+              value={wallpaper} 
+              onChange={(e) => {
+                setWallpaper(e.target.value); // Update parent state with selected color
+              }} 
               style={{ 
-                backgroundColor: selectedColor,
-                appearance: 'none', // Remove default styling
-                outline: 'none', // Remove focus outline
-                border: 'none', // Remove border
-                boxShadow: 'none', // Remove any shadow
+                backgroundColor: wallpaper,
+                appearance: 'none', 
+                outline: 'none', 
+                border: 'none', 
+                boxShadow: 'none',
               }} 
             />
           </div>
@@ -50,20 +46,20 @@ const AppearanceSection = ({ handleSortBy }) => {
           <h2 className="text-xl self-start m-1 mt-4 font-bold text-white">Font</h2>
           <div className="flex flex-row items-center space-x-4">
             <button 
-              className={`text-lg font-bold w-20 h-14 rounded-xl ${selectedFont === 'Font1' ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
-              onClick={() => handleFontSelection('Font1')}
+              className={`text-lg font-bold w-20 h-14 rounded-xl ${font === 0 ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
+              onClick={() => setFont(0)}
             >
               Font1
             </button>
             <button 
-              className={`text-lg font-bold w-20 h-14 rounded-xl ${selectedFont === 'Font2' ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
-              onClick={() => handleFontSelection('Font2')}
+              className={`text-lg font-bold w-20 h-14 rounded-xl ${font === 1 ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
+              onClick={() => setFont(1)}
             >
               Font2
             </button>
             <button 
-              className={`text-lg font-bold w-20 h-14 rounded-xl ${selectedFont === 'Font3' ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
-              onClick={() => handleFontSelection('Font3')}
+              className={`text-lg font-bold w-20 h-14 rounded-xl ${font === 2 ? 'bg-white text-basegreen' : 'bg-graygreen text-gray1'}`} 
+              onClick={() => setFont(2)}
             >
               Font3
             </button>
@@ -89,21 +85,21 @@ const AppearanceSection = ({ handleSortBy }) => {
               <div className="absolute right-0 mt-2 border border-gray-300 rounded-md bg-white shadow-lg w-56 z-10">
                 <ul className="p-2">
                   <li 
-                    onClick={() => handleSortSelection('latest', 'Latest', '/asset/lastest_icon.svg')} 
+                    onClick={() => handleSortSelection(0, 'Latest', '/asset/lastest_icon.svg')} 
                     className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <img src="/asset/lastest_icon.svg" className="w-10 h-10 mr-2" alt="Latest" />
                     <span className="font-semibold">Latest</span>
                   </li>
                   <li 
-                    onClick={() => handleSortSelection('likes', 'Likes', '/asset/heart_icon.svg')} 
+                    onClick={() => handleSortSelection(1, 'Likes', '/asset/heart_icon.svg')} 
                     className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <img src="/asset/heart_icon.svg" className="w-10 h-10 mr-2" alt="Likes" />
                     <span className="font-semibold">Likes</span>
                   </li>
                   <li 
-                    onClick={() => handleSortSelection('comments', 'Comments', '/asset/comment_icon.svg')} 
+                    onClick={() => handleSortSelection(2, 'Comments', '/asset/comment_icon.svg')} 
                     className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <img src="/asset/comment_icon.svg" className="w-10 h-10 mr-2" alt="Comments" />

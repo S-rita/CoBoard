@@ -3,7 +3,7 @@ import InfoPanel from './InfoPanel';
 import SharePanel from './SharePanel';
 import SettingPanel from './SettingPanel';
 
-const Tab = () => {
+const Tab = ({ board, forum_name }) => {
   const [isInfoPanelVisible, setInfoPanelVisible] = useState(false);
   const [isSharePanelVisible, setSharePanelVisible] = useState(false);
   const [isSettingPanelVisible, setSettingPanelVisible] = useState(false);
@@ -59,9 +59,19 @@ const Tab = () => {
       </div>
 
       {/* Conditional rendering of InfoPanel, SharePanel, and SettingPanel */}
-      <InfoPanel isVisible={isInfoPanelVisible} closeInfoPanel={closeInfoPanel} />
+      <InfoPanel 
+        isVisible={isInfoPanelVisible} 
+        closeInfoPanel={closeInfoPanel}
+        board = {board}
+        forum_name = {forum_name} 
+      />
       <SharePanel isVisible={isSharePanelVisible} closeSharePanel={closeSharePanel} />
-      <SettingPanel isVisible={isSettingPanelVisible} closeSettingPanel={closeSettingPanel} /> {/* Fixed here */}
+      <SettingPanel 
+        isVisible={isSettingPanelVisible} 
+        closeSettingPanel={closeSettingPanel}
+        board = {board}
+        forum_name = {forum_name} 
+      />
     </>
   );
 };

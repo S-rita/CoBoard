@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Preview = ({ category, onClose, onJoin}) => {
+const Preview = ({ title, description, onClose, onJoin}) => {
     return (
         <div id="preview" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25">
             <div className="bg-white w-fit p-6 rounded-2xl shadow-lg relative">
@@ -27,10 +27,8 @@ const Preview = ({ category, onClose, onJoin}) => {
                     <span className="text-2xl font-bold text-gray-500">PREVIEW</span>
                 </div>
                 <div className="text-left">
-                    <h1 className="text-xl font-bold mb-1">{category}</h1>
-                    <p className="text-gray-600 text-sm">
-                        Recommended restaurants and dishes from the cafeterias on the campus.
-                    </p>
+                    <h1 className="text-xl font-bold mb-1">{title}</h1>
+                    <p className="text-gray-600 text-sm">{description}</p>
                 </div>
                 <div className="flex flex-row">
                     <div className="flex flex-col bg-graygreen w-fit h-11 m-2 p-2 rounded-md items-center justify-center">

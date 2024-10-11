@@ -27,15 +27,15 @@ const AccessSection = ({ handleAccess = () => {} }) => {
             {accessDropdownVisible && (
               <div className="absolute right-0 mt-2 border border-gray-300 rounded-md bg-white shadow-lg w-56 z-10">
                 <ul className="p-2">
-                  <li 
-                    onClick={() => handleAccessSelection('public', 'Public', '/asset/public_button.svg')} 
+                  <li
+                    onClick={() => handleAccessSelection('public', 'Public', '/asset/public_button.svg')}
                     className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <img src="/asset/public_button.svg" className="w-10 h-10 mr-2" alt="Public" />
                     <span className="font-semibold">Public</span>
                   </li>
-                  <li 
-                    onClick={() => handleAccessSelection('private', 'Private', '/asset/private_button.svg')} 
+                  <li
+                    onClick={() => handleAccessSelection('private', 'Private', '/asset/private_button.svg')}
                     className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <img src="/asset/private_button.svg" className="w-10 h-10 mr-2" alt="Private" />

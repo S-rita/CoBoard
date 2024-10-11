@@ -6,19 +6,21 @@ const Body = ({ board, forum_name }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const [isCreateTopicVisible, setCreateTopicVisible] = useState(false);
     const [topics, setTopics] = useState([]);
-    const [loading, setLoading] = useState(false);  // Add loading state
-    const [error, setError] = useState('');  // Add error state
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [wallpaper, setWallpaper] = useState('#D9D9D9');  // State for wallpaper
 
     useEffect(() => {
         const loadTopics = async () => {
             setLoading(true);
             setError('');
             try {
-                const data = await fetchTopics(board, forum_name);  // Assuming fetchTopics is defined elsewhere
-                if (!data || !Array.isArray(data)) {
+                const response = await fetchTopics(board, forum_name);
+                if (!response || !response.topics || !Array.isArray(response.topics)) {
                     throw new Error("Invalid data format");
                 }
-                setTopics(data);  // Set the topics instead of forums
+                setTopics(response.topics);  // Set the topics
+                setWallpaper(response.wallpaper);  // Set wallpaper from the response
             } catch (error) {
                 console.error("Failed to load topics", error);
                 setError("Failed to load topics. " + (error.message || ''));
@@ -42,13 +44,15 @@ const Body = ({ board, forum_name }) => {
         setCreateTopicVisible(false);
     };
 
-    // Function to handle adding the new topic
     const handleCreateTopic = (newTopic) => {
-        setTopics([...topics, newTopic]);  // Add the new topic to the list of topics
+        setTopics([...topics, newTopic]);
     };
 
     return (
-        <div className="w-full h-screen bg-graybg relative overflow-auto pl-8 pr-28 flex flex-col">
+        <div 
+            className="w-full h-screen relative overflow-auto pl-8 pr-28 flex flex-col" 
+            style={{ backgroundColor: wallpaper || 'defaultColor' }}  // Set the background color dynamically
+        >
             <button
                 id="sortbyForumButton"
                 onClick={toggleDropdown}
@@ -78,7 +82,7 @@ const Body = ({ board, forum_name }) => {
             ) : error ? (
                 <div>{error}</div>
             ) : (
-                <div className="w-full h-screen bg-graybg relative overflow-auto">
+                <div className="w-full h-screen relative overflow-auto">
                     <div className="flex flex-row my-10">
                         {topics.map((topic) => (
                             <div key={topic.topic_id} className="topic-section flex flex-col">
@@ -125,11 +129,10 @@ const Body = ({ board, forum_name }) => {
                 <img src="/asset/addTitle_button.svg" className="shadow-xl rounded-full" alt="Add Topic" />
             </button>
 
-            {/* Pass handleCreateTopic as onCreateTopic to the CreateTopic component */}
             <CreateTopic
                 isVisible={isCreateTopicVisible}
                 closeCreateTopic={closeCreateTopic}
-                onCreateTopic={handleCreateTopic}  // <== Passing the function here
+                onCreateTopic={handleCreateTopic} 
                 board={board}
                 forum_name={forum_name}
             />

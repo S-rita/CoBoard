@@ -3,12 +3,17 @@ import HeadingSection from './HeadingSection';
 import AppearanceSection from './AppearanceSection';
 import AccessSection from './AccessSection';
 import TagSection from './TagSection';
-import { createForum } from '../../api'; // Ensure you're only importing createForum
+import { createForum } from '../../api';
 
 const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => {
   const [activeSection, setActiveSection] = useState('heading');
   const [title, setTitle] = useState('');
+  const [icon, setIcon] = useState(null);
   const [description, setDescription] = useState('');
+  const [wallpaper, setWallpaper] = useState('#D9D9D9');
+  const [font, setFont] = useState(0);
+  const [sortby, setSortBy] = useState(0);
+  const [access, setAccess] = useState(0);
 
   const panelRef = useRef(null);
   const headingRef = useRef(null);
@@ -45,25 +50,35 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
 
   const handleCreate = async () => {
     if (title.trim() === '') {
-      alert("Title cannot be empty!");
+      alert('Title cannot be empty!');
       return;
     }
 
     const forumData = {
       forum_name: title,
       description: description,
-      creator_id: '12345678', // Replace with the actual creator ID
-      board: board // Include the board
-      // slug should NOT be included
+      icon: icon,
+      wallpaper: wallpaper,
+      font: font,
+      sortby: sortby,
+      access: access, // Include access in the data
+      creator_id: '12345678', // Replace with actual creator ID
+      board: board, // Include the board
     };
 
     try {
       const createdForum = await createForum(board, forumData); // Create forum
       console.log('Created forum:', createdForum);
       onForumCreated(createdForum); // Pass the newly created forum
-      
+
+      // Clear the inputs after creating
       setTitle('');
       setDescription('');
+      setIcon(null);
+      setWallpaper('#D9D9D9');
+      setFont(0);
+      setSortBy(0)
+      setAccess(0);
 
       closeCreateForum(); // Close the modal after successful creation
     } catch (error) {
@@ -74,7 +89,7 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
       }
       alert('Error creating forum. Please try again.');
     }
-  };  
+  };
 
   if (!isVisible) return null;
 
@@ -104,34 +119,40 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
               </button>
             ))}
           </div>
-          <button 
-            onClick={handleCreate} 
-            className={`absolute top-0 right-0 w-20 h-12 m-7 bg-basegreen text-white rounded px-4 py-2 ${title.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`} 
+          <button
+            onClick={handleCreate}
+            className={`absolute top-0 right-0 w-20 h-12 m-7 bg-basegreen text-white rounded px-4 py-2 ${title.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={title.trim() === ''}
           >
             Create
           </button>
         </div>
-        
+
         {/* Sections */}
         <div className="p-6">
           <div ref={headingRef}>
-            <HeadingSection 
-              setTitle={setTitle} 
+            <HeadingSection
+              setTitle={setTitle}
               setDescription={setDescription}
-              title={title} 
+              setIcon={setIcon}
+              title={title}
               description={description}
+              icon={icon}
             />
           </div>
           <div ref={appearanceRef}>
-            <AppearanceSection handleSortBy={(sortOption) => console.log('Sort by:', sortOption)} />
+            <AppearanceSection
+              handleSortBy={(sortOption) => console.log('Sort by:', sortOption)}
+              setWallpaper={setWallpaper}
+              setFont={setFont}
+              setSortBy = {setSortBy}
+              wallpaper={wallpaper}
+              font={font}
+              sortby = {sortby}
+            />
           </div>
           <div ref={accessRef}>
-            <AccessSection 
-              forumSettingAccess={() => console.log('Access Settings')}
-              forumSettingAccessPublic={() => console.log('Public Access')}
-              forumSettingAccessPrivate={() => console.log('Private Access')}
-            />
+            <AccessSection handleAccess={setAccess} />
           </div>
           <div ref={tagsRef}><TagSection /></div>
         </div>

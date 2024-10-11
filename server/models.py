@@ -48,7 +48,8 @@ class Forum(Base):
     slug = Column(String(255), nullable=False, unique=True)
     board = Column(String(255), nullable=False)
 
-    topics = relationship("ForumTopic", back_populates="forum")
+    # Updated topics relationship
+    topics = relationship("Topic", secondary="forum_topic", back_populates="forums")
 
 # ForumTag model
 class ForumTag(Base):
@@ -64,8 +65,9 @@ class ForumTopic(Base):
     forum_id = Column(Integer, ForeignKey('forum.forum_id'), primary_key=True, index=True)
     topic_id = Column(Integer, ForeignKey('topic.topic_id'), primary_key=True, index=True)
 
-    forum = relationship("Forum", back_populates="topics")
-    topic = relationship("Topic", back_populates="forums")
+    # Removed back_populates from here to avoid circular references
+    forum = relationship("Forum")
+    topic = relationship("Topic")
 
 # Post model
 class Post(Base):
@@ -114,7 +116,7 @@ class Topic(Base):
     text = Column(String(255), nullable=False)
 
     # Correct relationship
-    forums = relationship("ForumTopic", back_populates="topic")
+    forums = relationship("Forum", secondary="forum_topic", back_populates="topics")
 
 # TopicPost model
 class TopicPost(Base):

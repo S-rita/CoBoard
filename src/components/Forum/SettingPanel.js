@@ -3,9 +3,18 @@ import HeadingSection from './HeadingSection';
 import AppearanceSection from './AppearanceSection';
 import AccessSection from './AccessSection';
 import TagSection from './TagSection';
+import { updateForum, fetchTopics } from '../../api';
 
-const SettingPanel = ({ isVisible, closeSettingPanel }) => {
+const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name }) => {
   const [activeSection, setActiveSection] = useState('heading');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [icon, setIcon] = useState(null);
+  const [wallpaper, setWallpaper] = useState('#D9D9D9');
+  const [font, setFont] = useState(0);
+  const [sortby, setSortBy] = useState(0);
+  const [access, setAccess] = useState(0);
+  const [creator_id, setCreatorID] = useState('12345678');
   
   // Create references for each section and buttons
   const panelRef = useRef(null);
@@ -41,6 +50,54 @@ const SettingPanel = ({ isVisible, closeSettingPanel }) => {
     setUnderlinePosition(0); // Set underline for the first button on load
   }, []);
 
+  useEffect(() => {
+    const loadTopics = async () => {
+        try {
+          const response = await fetchTopics(board, forum_name);
+          setTitle(response.forum_name);
+          setDescription(response.description);
+          setIcon(response.icon);
+          setWallpaper(response.wallpaper);
+          setFont(response.font);
+          setSortBy(response.sortby);
+          setCreatorID(response.creator_id);
+        } catch (error) {
+          console.error("Failed to load topics", error);
+        }
+    };
+  
+    loadTopics();
+  }, [board, forum_name]);
+
+  const handleSubmit = async () => {
+    if (title.trim() === '') {
+        alert('Title cannot be empty!');
+        return;
+    }
+  
+    const forumData = {
+      forum_name: title,
+      description: description,
+      icon: icon,
+      wallpaper: wallpaper,
+      font: font,
+      sortby: sortby,
+      access: access, // Include access in the data
+      creator_id: '12345678', // Replace with actual creator ID
+      board: board, // Include the board
+    };
+  
+    try {
+        const updatedForum = await updateForum(board, forum_name, forumData);
+        closeSettingPanel();
+    } catch (error) {
+        console.error('Error updating forum:', error.response?.data);
+        alert('Error updating forum. Please try again.');
+    }
+  };
+  
+  
+
   if (!isVisible) return null;
 
   return (
@@ -70,18 +127,39 @@ const SettingPanel = ({ isVisible, closeSettingPanel }) => {
               </button>
             ))}
           </div>
+          <button
+            onClick={handleSubmit}
+            className={`absolute top-0 right-0 w-20 h-12 m-7 bg-basegreen text-white rounded px-4 py-2 ${title.trim() === '' ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Submit
+          </button>
         </div>
         
         {/* Sections */}
         <div className="p-6">
-          <div ref={headingRef}><HeadingSection /></div>
-          <div ref={appearanceRef}><AppearanceSection handleSortBy={(sortOption) => console.log('Sort by:', sortOption)} /></div>
-          <div ref={accessRef}>
-            <AccessSection 
-              forumSettingAccess={() => console.log('Access Settings')}
-              forumSettingAccessPublic={() => console.log('Public Access')}
-              forumSettingAccessPrivate={() => console.log('Private Access')}
+        <div ref={headingRef}>
+            <HeadingSection
+              setTitle={setTitle}
+              setDescription={setDescription}
+              setIcon={setIcon}
+              title={title}
+              description={description}
+              icon={icon}
             />
+          </div>
+          <div ref={appearanceRef}>
+            <AppearanceSection
+              handleSortBy={(sortOption) => console.log('Sort by:', sortOption)}
+              setWallpaper={setWallpaper}
+              setFont={setFont}
+              setSortBy = {setSortBy}
+              wallpaper={wallpaper}
+              font={font}
+              sortby = {sortby}
+            />
+          </div>
+          <div ref={accessRef}>
+            <AccessSection handleAccess={setAccess} />
           </div>
           <div ref={tagsRef}><TagSection /></div>
         </div>

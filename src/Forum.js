@@ -11,12 +11,12 @@ const Forum = () => {
   return (
     <div className="flex flex-row relative">
       <div className="flex flex-col relative w-full h-fit">
-        <Header /> 
+        <Header board={board} forum_name={forum_name}/> 
         {/* Pass both scope and forum_name to the Body component */}
         <Body board={board} forum_name={forum_name} />
       </div>
       <div className="flex flex-col relative min-w-screen min-h-screen">
-        <Tab />  
+        <Tab board={board} forum_name={forum_name} />  
       </div> 
     </div>
   );
