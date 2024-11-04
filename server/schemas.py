@@ -2,6 +2,21 @@ from datetime import date
 from pydantic import BaseModel, Field
 from typing import Optional, List
 
+# Tag Pydantic models
+class TagBase(BaseModel):
+    tag_text: str
+    board: str
+    use: int = 0
+
+class TagCreate(TagBase):
+    pass
+
+class Tag(TagBase):
+    tag_id: int
+
+    class Config:
+        from_attributes = True
+
 # ABookmark Pydantic models
 class ABookmarkBase(BaseModel):
     forum_id: int
@@ -30,7 +45,7 @@ class Access(AccessBase):
 class AnonymousUserBase(BaseModel):
     aid: str
     apw: str
-    aprofile: Optional[bytes] = None
+    aprofile: Optional[str] = None
 
 class AnonymousUserCreate(AnonymousUserBase):
     pass
@@ -43,6 +58,8 @@ class AnonymousUser(AnonymousUserBase):
 class CommentBase(BaseModel):
     comment_text: str
     comment_heart: Optional[int] = 0
+    scomment_creator: Optional[str]
+    acomment_creator: Optional[str]
 
 class CommentCreate(CommentBase):
     pass
@@ -60,14 +77,14 @@ class ForumBase(BaseModel):
     creator_id: str
     created_time: Optional[date] = Field(default_factory=date.today)  # Capture only the date
     icon: Optional[str] = Field(None, description="Base64 encoded icon")
-    wallpaper: Optional[str] = "#D9D9D9"
+    wallpaper: Optional[str] = "#006b62"
     font: Optional[int] = 0
     sort_by: Optional[int] = 0
     slug: Optional[str] = None  # Make slug optional
     board: str
 
 class ForumCreate(ForumBase):
-    pass
+    tags: Optional[List[Tag]] = []
 
 class Forum(ForumBase):
     forum_id: int
@@ -104,6 +121,9 @@ class PostBase(BaseModel):
     post_head: str
     post_body: Optional[str] = None
     heart: Optional[int] = 0
+    spost_creator: Optional[str]
+    apost_creator: Optional[str]
+    comments: List[Comment] = []
 
 class PostCreate(PostBase):
     pass
@@ -142,7 +162,7 @@ class SBookmark(SBookmarkBase):
 class SEUserBase(BaseModel):
     sid: str
     spw: str
-    sprofile: Optional[bytes] = None
+    sprofile: Optional[str] = None
     sfile: Optional[str] = None
 
 class SEUserCreate(SEUserBase):
@@ -152,22 +172,10 @@ class SEUser(SEUserBase):
     class Config:
         from_attributes = True
 
-# Tag Pydantic models
-class TagBase(BaseModel):
-    tag_text: str
-
-class TagCreate(TagBase):
-    pass
-
-class Tag(TagBase):
-    tag_id: int
-
-    class Config:
-        from_attributes = True
-
 # Topic Pydantic models
 class TopicBase(BaseModel):
     text: str
+    posts: List[Post] = []
 
 class TopicCreate(TopicBase):
     text: str
@@ -190,8 +198,35 @@ class TopicPost(TopicPostBase):
     class Config:
         from_attributes = True
 
+###
 class ForumResponse(Forum):
     topics: List[Topic]
+    tags: List[Tag]
+    btags: List[Tag]
+
+    class Config:
+        from_attributes = True
+
+class BoardResponse(BaseModel):
+    forums: List[Forum]
+    tags: List[Tag]
+    forumtag: List[ForumTag]
+
+    class Config:
+        from_attributes = True
+
+class LikeUpdate(BaseModel):
+    item_id: int
+    item_type: str  # 'post' or 'comment'
+
+class LikeResponse(BaseModel):
+    item_id: int
+    item_type: str
+    likes: int
+
+class UserResponse(BaseModel):
+    se: List[SEUser]
+    anonymous: List[AnonymousUser]
 
     class Config:
         from_attributes = True

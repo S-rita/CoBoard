@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useContext } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import Preview from './Preview';
 import CreateForum from './CreateForum';
 import { fetchForums } from '../../api';  
+import { UserContext } from '../../UserContext';
 
-const MainBody = ({ board }) => {
-    console.log("Current Board:", board);
+const MainBody = ({ board, searchForumTerm='', tagfiltered=[] }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const [isPreviewVisible, setPreviewVisible] = useState(false);
     const [isCreateForumVisible, setCreateForumVisible] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [forums, setForums] = useState([]);
+    const [board_tags, setBoardTags] = useState([]);
+    const [forumtag, setForumTag] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [filteredForums, setFilteredForums] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const { status } = useContext(UserContext);
+    console.log(status);
 
     const openCreateForum = () => {
         setCreateForumVisible(true);
@@ -38,11 +44,14 @@ const MainBody = ({ board }) => {
             setLoading(true);
             try {
                 const data = await fetchForums(board);
-                if (!data || !Array.isArray(data)) {
+                if (!data || !data.forums || !Array.isArray(data.forums)) {
                     throw new Error("Invalid data format");
                 }
-                console.log("Fetched Forums:", data);
-                setForums(data);
+                console.log("Fetched Forums:", data.forums);
+                console.log("Fetched ForumTag:", data.forumtag);
+                setForums(data.forums);
+                setBoardTags(data.tags);
+                setForumTag(data.forumtag);
             } catch (error) {
                 console.error("Failed to load forums", error);
                 setError("Failed to load forums. " + (error.message || ''));
@@ -54,13 +63,43 @@ const MainBody = ({ board }) => {
         loadForums();
     }, [board]);  
 
+    useEffect(() => {
+        if (searchForumTerm === '') {
+            setFilteredForums([...forums]);
+        } else {
+            const filtered = forums.filter(forum => 
+                forum.forum_name.toLowerCase().startsWith(searchForumTerm.toLowerCase())
+            );
+            setFilteredForums([...filtered]);
+        }
+    }, [searchForumTerm, forums]);
+    
+    useEffect(() => {
+        if (tagfiltered.length === 0) {
+            setFilteredForums([...forums]);
+        } else {
+            const filtered = forums.filter(forum => 
+                forumtag.some(ft => 
+                    ft.forum_id === forum.forum_id && tagfiltered.includes(ft.tag_id)
+                )
+            );
+            setFilteredForums([...filtered]);
+        }
+    }, [tagfiltered, forums, forumtag]);    
+
     const toggleDropdown = () => {
         setDropdownVisible(!isDropdownVisible);
     };
 
-    const openPreview = (title, description) => {
-        setTitle(title);
-        setDescription(description)
+    const openPreview = (forum) => {
+        const forumTags = forumtag
+            .filter(ft => ft.forum_id === forum.forum_id)
+            .map(ft => board_tags.find(tag => tag.tag_id === ft.tag_id))
+            .filter(tag => tag !== undefined); // Ensure only valid tags are included
+    
+        setTitle(forum.forum_name);
+        setDescription(forum.description);
+        setTags(forumTags);
         setPreviewVisible(true);
     };
 
@@ -68,13 +107,21 @@ const MainBody = ({ board }) => {
         setPreviewVisible(false);
     };
 
-    const slugify = (text) => {
-        return text.toLowerCase().replace(/\s+/g, '-');  
+    const slugify = (forumName) => {
+        return forumName
+            .toLowerCase()
+            .replace(/\s+/g, '-')          // Replace spaces with -
+            .replace(/[[]/g, '-')          // Replace [ with -
+            .replace(/[\]]/g, '-')         // Replace ] with -
+            .replace(/;/g, '-')            // Replace ; with -
+            .replace(/[^a-z0-9-]/g, '')    // Remove all non-alphanumeric characters except -
+            .replace(/--+/g, '-')          // Replace multiple - with a single -
+            .trim();
     };
 
     const joinForum = (forumName) => {
         const slugifiedForumName = slugify(forumName);
-        navigate(`/${board}/${slugifiedForumName}`);  
+        navigate(`/coboard/${board}/${slugifiedForumName}`);   
     };
 
     return (
@@ -110,27 +157,31 @@ const MainBody = ({ board }) => {
             {loading && <div>Loading...</div>}
 
             <div className="grid grid-cols-3 gap-10 w-full h-auto mt-16">
-                <div className="flex flex-col w-full h-full justify-center items-center relative">
-                    <div className="w-80 h-56 border-4 border-lightgreen border-dashed justify-center items-center rounded-3xl -mt-8">
-                        <button 
-                            type="button" 
-                            onClick={openCreateForum}
-                            className="w-full h-full text-9xl text-lightgreen"
-                        >
-                            +
-                        </button>
-                    </div>        
-                </div>
+                {status === "se" && (
+                    <div className="flex flex-col w-full h-full justify-center items-center relative">
+                        <div className="w-80 h-56 border-4 border-lightgreen border-dashed justify-center items-center rounded-3xl -mt-8">
+                            <button 
+                                type="button" 
+                                onClick={openCreateForum}
+                                className="w-full h-full text-9xl text-lightgreen"
+                            >
+                                +
+                            </button>
+                        </div>        
+                    </div>
+                )} 
                 {forums.length === 0 && !loading && (
                     <div className="text-center text-lg">No forums available.</div>
                 )}
-                {forums.map((forum, index) => (
+                {filteredForums.map((forum, index) => (
                     forum ? (
                         <div key={forum.forum_id} className="flex flex-col w-full h-full justify-center items-center group relative">
-                            <div className="w-80 h-56 bg-slate-600 justify-center items-center rounded-3xl overflow-hidden">
+                            <div className="w-80 h-56 justify-center items-center rounded-3xl overflow-hidden"
+                                style={{ backgroundColor: forum.wallpaper || 'basegreen' }}
+                            >
                                 <button 
                                     type="button" 
-                                    onClick={() => openPreview(forum.forum_name, forum.description)}
+                                    onClick={() => openPreview(forum)} // Pass the entire forum object
                                     className="w-full h-full"
                                 >
                                     {forum.icon && (
@@ -159,6 +210,7 @@ const MainBody = ({ board }) => {
                 <Preview 
                     title={title} 
                     description={description}
+                    tags={tags}
                     onClose={closePreview} 
                     onJoin={() => joinForum(title)} 
                 />
@@ -167,7 +219,7 @@ const MainBody = ({ board }) => {
                 isVisible={isCreateForumVisible} 
                 closeCreateForum={closeCreateForum} 
                 board={board} 
-                onForumCreated={addForum} 
+                onForumCreated={addForum}
             />
         </div>
     );

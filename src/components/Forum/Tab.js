@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InfoPanel from './InfoPanel';
 import SharePanel from './SharePanel';
 import SettingPanel from './SettingPanel';
+import { fetchTopics } from '../../api';
+import { UserContext } from '../../UserContext';
 
 const Tab = ({ board, forum_name }) => {
   const [isInfoPanelVisible, setInfoPanelVisible] = useState(false);
   const [isSharePanelVisible, setSharePanelVisible] = useState(false);
   const [isSettingPanelVisible, setSettingPanelVisible] = useState(false);
+  const navigate = useNavigate();
+  const { user, status } = useContext(UserContext);
+  const [creator_id, setCreatorID] = useState('12345678');
+  const id = status === "se" ? user.sid : user.aid;
+
+  useEffect(() => {
+    const loadTopics = async () => {
+        try {
+          const response = await fetchTopics(board, forum_name);
+          setCreatorID(response.creator_id);
+        } catch (error) {
+          console.error("Failed to load topics", error);
+        }
+    };
+
+    loadTopics();
+  }, [board, forum_name]);
 
   const openInfoPanel = () => {
     setInfoPanelVisible(true);
@@ -30,10 +50,12 @@ const Tab = ({ board, forum_name }) => {
 
   const openSettingPanel = () => {
     setSettingPanelVisible(true);
+    navigate(`/coboard/${board}/${forum_name}/setting`);
   };
 
   const closeSettingPanel = () => {
     setSettingPanelVisible(false);
+    navigate(`/coboard/${board}/${forum_name}`);
   };
 
   return (
@@ -52,13 +74,14 @@ const Tab = ({ board, forum_name }) => {
           <button type="button" onClick={openSharePanel} className="w-12 h-12 mt-10">
             <img src="/asset/share_button.svg" alt="Share Button" />
           </button>
-          <button type="button" onClick={openSettingPanel} className="w-12 h-12 mt-10">
-            <img src="/asset/setting_button.svg" alt="Setting Button" />
-          </button>
+          {creator_id === id && (
+            <button type="button" onClick={openSettingPanel} className="w-12 h-12 mt-10">
+              <img src="/asset/setting_button.svg" alt="Setting Button" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Conditional rendering of InfoPanel, SharePanel, and SettingPanel */}
       <InfoPanel 
         isVisible={isInfoPanelVisible} 
         closeInfoPanel={closeInfoPanel}

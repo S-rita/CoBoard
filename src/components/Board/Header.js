@@ -1,6 +1,10 @@
 import React from 'react';
 
-const Header = () => {
+const Header = ({ setSearchForumTerm }) => {
+  const handleSearchForum = (event) => {
+    setSearchForumTerm(event.target.value);
+  };
+
   return (
     <div className="bg-basegreen w-full h-36 drop-shadow-xl flex items-center justify-between sticky top-0">
       <div className="flex items-center">
@@ -11,7 +15,13 @@ const Header = () => {
       </div>
       <div className="flex items-center">
         <div className="bg-white rounded h-1/4 w-64 mr-10 drop-shadow-md pt-1 px-4 flex">
-          <p className="text-gray-400 text-xl">{'\uD83D\uDD0D'} Search...</p>
+          <input
+            type="text"
+            className="flex-grow bg-transparent outline-none"
+            placeholder= {`\uD83D\uDD0D Search...`}
+            onChange={handleSearchForum}
+            autoFocus
+          />
         </div>
         <div className="bg-slate-400 rounded-full h-16 w-28 mr-10 flex justify-center items-center relative group">
           <div className="bg-white rounded-full h-11/12 w-11/12 flex justify-center items-center relative">

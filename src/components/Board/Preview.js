@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Preview = ({ title, description, onClose, onJoin}) => {
+const Preview = ({ title, description, tags, onClose, onJoin }) => {
     return (
         <div id="preview" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25">
             <div className="bg-white w-fit p-6 rounded-2xl shadow-lg relative">
@@ -30,14 +30,18 @@ const Preview = ({ title, description, onClose, onJoin}) => {
                     <h1 className="text-xl font-bold mb-1">{title}</h1>
                     <p className="text-gray-600 text-sm">{description}</p>
                 </div>
-                <div className="flex flex-row">
-                    <div className="flex flex-col bg-graygreen w-fit h-11 m-2 p-2 rounded-md items-center justify-center">
-                        <p className="font-bold">Restaurant</p>
+                {tags && tags.length > 0 && (
+                    <div className="flex flex-row flex-wrap mt-4">
+                        {tags.map(tag => (
+                            <div 
+                                key={tag.tag_id} 
+                                className="flex flex-col bg-graygreen w-fit h-11 m-2 p-2 rounded-md items-center justify-center"
+                            >
+                                <p className="font-bold text-white">{tag.tag_text}</p>
+                            </div>
+                        ))}
                     </div>
-                    <div className="flex flex-col bg-graygreen w-fit h-11 m-2 p-2 rounded-md items-center justify-center">
-                        <p className="font-bold">Food and Drinks</p>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

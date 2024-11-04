@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const withMT = require("@material-tailwind/react/utils/withMT");
+
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -38,6 +40,9 @@ module.exports = {
       transitionDuration: {
         '400': '400ms',
       },
+      fontFamily: {
+        sans: ['"Istok Web"', 'sans-serif'],
+      }
     },
   },
   plugins: [],

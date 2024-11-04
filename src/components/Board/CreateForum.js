@@ -1,19 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import HeadingSection from './HeadingSection';
 import AppearanceSection from './AppearanceSection';
 import AccessSection from './AccessSection';
 import TagSection from './TagSection';
-import { createForum } from '../../api';
+import { createForum, fetchForums } from '../../api';
+import { UserContext } from '../../UserContext';
 
 const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => {
   const [activeSection, setActiveSection] = useState('heading');
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState(null);
   const [description, setDescription] = useState('');
-  const [wallpaper, setWallpaper] = useState('#D9D9D9');
+  const [wallpaper, setWallpaper] = useState('#006b62');
   const [font, setFont] = useState(0);
   const [sortby, setSortBy] = useState(0);
   const [access, setAccess] = useState(0);
+  const [tags, setTags] = useState([]);
+  const [btags, setBoardTags] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user, status } = useContext(UserContext);
 
   const panelRef = useRef(null);
   const headingRef = useRef(null);
@@ -48,6 +54,27 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
     setUnderlinePosition(0); // Set underline for the first button on load
   }, []);
 
+  useEffect(() => {
+    const loadForums = async () => {
+        setLoading(true);
+        try {
+            const data = await fetchForums(board);
+            if (!data || !data.forums || !Array.isArray(data.forums)) {
+                throw new Error("Invalid data format");
+            }
+            console.log("Fetched Forums:", data.forums);
+            setBoardTags(data.tags);
+        } catch (error) {
+            console.error("Failed to load forums", error);
+            setError("Failed to load forums. " + (error.message || ''));
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    loadForums();
+}, [board]);  
+
   const handleCreate = async () => {
     if (title.trim() === '') {
       alert('Title cannot be empty!');
@@ -62,11 +89,13 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
       font: font,
       sortby: sortby,
       access: access, // Include access in the data
-      creator_id: '12345678', // Replace with actual creator ID
+      creator_id: user.sid, // Replace with actual creator ID
       board: board, // Include the board
+      tags: tags
     };
 
     try {
+      console.log(forumData);
       const createdForum = await createForum(board, forumData); // Create forum
       console.log('Created forum:', createdForum);
       onForumCreated(createdForum); // Pass the newly created forum
@@ -79,6 +108,7 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
       setFont(0);
       setSortBy(0)
       setAccess(0);
+      setTags([]);
 
       closeCreateForum(); // Close the modal after successful creation
     } catch (error) {
@@ -154,7 +184,7 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
           <div ref={accessRef}>
             <AccessSection handleAccess={setAccess} />
           </div>
-          <div ref={tagsRef}><TagSection /></div>
+          <TagSection tags={tags} btags={btags} setTags={setTags} />
         </div>
       </div>
     </div>

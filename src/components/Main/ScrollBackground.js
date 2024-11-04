@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const sections = [
-    { title: "Admission", img: "/asset/admission.jpg", link: "/admission" },
-    { title: "Class Work", img: "/asset/classwork.jpg", link: "/classwork" },
-    { title: "Student Discussion", img: "/asset/discussion.jpg", link: "/discussion" },
-    { title: "Education", img: "/asset/Education.jpg", link: "/education" },
-    { title: "Alumni", img: "/asset/alumni.jpg", link: "/alumni" },
+    { title: "Admission", img: "/asset/admission.jpg", link: "/coboard/admission" },
+    { title: "Class Work", img: "/asset/classwork.jpg", link: "/coboard/classwork" },
+    { title: "Student Discussion", img: "/asset/discussion.jpg", link: "/coboard/discussion" },
+    { title: "Education", img: "/asset/Education.jpg", link: "/coboard/education" },
+    { title: "Alumni", img: "/asset/alumni.jpg", link: "/coboard/alumni" },
 ];
 
-const ScrollBackground = () => {
+const ScrollBackground = ({status}) => {
     const [scrollPercentage, setScrollPercentage] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -26,6 +27,10 @@ const ScrollBackground = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    const handleNavigation = (link) => {
+        navigate(link);
+    };
 
     const backgroundStyle = scrollPercentage < 0.3 
         ? { background: '#006b62' } 
@@ -46,14 +51,15 @@ const ScrollBackground = () => {
                             />
                             <div className="overlay-content absolute bottom-0 w-full p-4 flex flex-col items-center opacity-0 group-hover:opacity-100 bg-black bg-opacity-30">
                                 <h3 className="text-white text-2xl mb-2 font-bold">{section.title}</h3>
-                                <Link to={section.link}>
-                                    <button className="w-64 h-16 text-white py-2 px-4 rounded-full border-2 border-white">
-                                        <div className="flex flex-row items-center justify-center">
-                                            <p className="flex flex-col mr-1 hover:mr-3 duration-400">Explore {section.title}</p>
-                                            <p className="text-lg flex flex-col">&#8594;</p>
-                                        </div>
-                                    </button>
-                                </Link>
+                                <button 
+                                    onClick={() => handleNavigation(section.link)}
+                                    className="w-64 h-16 text-white py-2 px-4 rounded-full border-2 border-white"
+                                >
+                                    <div className="flex flex-row items-center justify-center">
+                                        <p className="flex flex-col mr-1 hover:mr-3 duration-400">Explore {section.title}</p>
+                                        <p className="text-lg flex flex-col">&#8594;</p>
+                                    </div>
+                                </button>
                             </div>
                         </div>
                     ))}

@@ -4,6 +4,7 @@ import Body from './components/Main/Body';
 import Footer from './components/Main/Footer';
 
 const Main = () => {
+  
   return (
     <div className="relative">
       <Header />

@@ -1,10 +1,10 @@
 import React from 'react';
-import ScrollBackground from './ScrollBackground';
+import MainBody from './MainBody';
 
-const Body = ({status}) => {
+const Body = () => {
   return (
     <div className="bg-basegreen flex-grow flex flex-col items-center w-full">
-      <ScrollBackground status={status} />
+      <MainBody />
     </div>
   );
 };

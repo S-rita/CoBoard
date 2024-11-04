@@ -5,16 +5,18 @@ import AccessSection from './AccessSection';
 import TagSection from './TagSection';
 import { updateForum, fetchTopics } from '../../api';
 
-const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name }) => {
+const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name}) => {
   const [activeSection, setActiveSection] = useState('heading');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState(null);
-  const [wallpaper, setWallpaper] = useState('#D9D9D9');
+  const [wallpaper, setWallpaper] = useState('#006b62');
   const [font, setFont] = useState(0);
   const [sortby, setSortBy] = useState(0);
   const [access, setAccess] = useState(0);
   const [creator_id, setCreatorID] = useState('12345678');
+  const [tags, setTags] = useState([]);
+  const [btags, setBoardTag] = useState([]);
   
   // Create references for each section and buttons
   const panelRef = useRef(null);
@@ -61,13 +63,15 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name }) => {
           setFont(response.font);
           setSortBy(response.sortby);
           setCreatorID(response.creator_id);
+          setTags(response.tags);
+          setBoardTag(response.btags);
         } catch (error) {
           console.error("Failed to load topics", error);
         }
     };
-  
+
     loadTopics();
-  }, [board, forum_name]);
+}, [board, forum_name]);
 
   const handleSubmit = async () => {
     if (title.trim() === '') {
@@ -85,10 +89,12 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name }) => {
       access: access, // Include access in the data
       creator_id: '12345678', // Replace with actual creator ID
       board: board, // Include the board
+      tags: tags
     };
   
     try {
         const updatedForum = await updateForum(board, forum_name, forumData);
+        console.log(forumData);
         closeSettingPanel();
     } catch (error) {
         console.error('Error updating forum:', error.response?.data);
@@ -161,7 +167,9 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name }) => {
           <div ref={accessRef}>
             <AccessSection handleAccess={setAccess} />
           </div>
-          <div ref={tagsRef}><TagSection /></div>
+          <div ref={tagsRef}>
+            <TagSection tags={tags} btags={btags} setTags={setTags} />
+          </div>
         </div>
       </div>
     </div>

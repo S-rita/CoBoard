@@ -9,7 +9,7 @@ const CreateTopic = ({ isVisible, closeCreateTopic, onCreateTopic, board, forum_
     const handlePublish = async () => {
         if (topicText.trim()) {
             try {
-                const response = await fetch(`http://localhost:8000/${board}/${forum_name}/`, { // Ensure the URL is correct
+                const response = await fetch(`http://localhost:8000/coboard/${board}/${forum_name}/topic`, { // Ensure the URL is correct
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
