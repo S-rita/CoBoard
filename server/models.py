@@ -14,7 +14,7 @@ class Access(Base):
     __tablename__ = 'access'
     
     forum_id = Column(Integer, ForeignKey('forum.forum_id'), primary_key=True, index=True)
-    user_id = Column(String(255), ForeignKey('se_user.aid'), primary_key=True, index=True)
+    user_id = Column(String(10), ForeignKey('se_user.sid'), primary_key=True, index=True)
 
 # AnonymousUser model
 class AnonymousUser(Base):
@@ -58,6 +58,8 @@ class Forum(Base):
     sort_by = Column(Integer, default=0)
     slug = Column(String(255), nullable=False, unique=True)
     board = Column(String(255), nullable=False)
+    last_updated = Column(Date, nullable=False, default=func.current_date())
+    expired = Column(Date)
 
     # Updated topics relationship
     topics = relationship("Topic", secondary="forum_topic", back_populates="forums")
@@ -93,6 +95,8 @@ class Post(Base):
     heart = Column(Integer, default=0)
     spost_creator = Column(String(10), ForeignKey('se_user.sid'), nullable=True)
     apost_creator = Column(String(10), ForeignKey('anonymous_user.aid'), nullable=True)
+    pic = Column(LargeBinary)
+    publish = Column(Date)
 
     __table_args__ = (
         CheckConstraint(
@@ -161,3 +165,13 @@ class TopicPost(Base):
 
     topic = relationship("Topic")
     post = relationship("Post")
+
+# File model
+class File(Base):
+    __tablename__ = 'file'
+    file_id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, unique=True, index=True)
+    path = Column(String)
+    extension = Column(String)
+    owner = Column(String, ForeignKey('se_user.sid'))
+    post_id = Column(Integer, ForeignKey('post.post_id'))

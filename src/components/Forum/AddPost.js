@@ -1,28 +1,32 @@
-import React, { useState, useContext } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useState, useContext, useRef } from 'react';
 import { createPost } from '../../api'; 
 import { UserContext } from '../../UserContext';
 
 const AddPost = ({ isVisible, closeAddPost, onPostCreated, topic_id, board, forum_name }) => {
     const [postText, setPostText] = useState('');
     const [postDetail, setPostDetail] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');  
-    const location = useLocation();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [preview, setPreview] = useState(null);
     const { user, status } = useContext(UserContext);
+
+    const picInputRef = useRef();
+    const fileInputRef = useRef();
 
     const handlePublish = async () => {
         if (postText.trim() === '') {
             alert('Title cannot be empty!');
             return;
         }
-        console.log("ds", status, user);
 
         const postData = {
             post_head: postText,
             post_body: postDetail,
             heart: 0,
             spost_creator: status === "se" ? user.sid : null,
-            apost_creator: status === "a" ? user.aid : null
+            apost_creator: status === "a" ? user.aid : null,
+            pic: selectedImage,
         };
 
         try {
@@ -32,16 +36,36 @@ const AddPost = ({ isVisible, closeAddPost, onPostCreated, topic_id, board, foru
       
             setPostText('');
             setPostDetail('');
-      
+            setSelectedImage(null);
+            setPreview(null);
+            setSelectedFiles([]);
             closeAddPost();
         } catch (error) {
-            if (error.response) {
-              console.error('Error creating post:', error.response.data);
-            } else {
-              console.error('Error creating post:', error.message);
-            }
+            console.error('Error creating post:', error.response?.data || error.message);
             alert('Error creating post. Please try again.');
         }
+    };
+
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result.split(',')[1];
+                setSelectedImage(base64String);
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        setSelectedFiles(prevFiles => [...prevFiles, ...files]);
+    };
+
+    const handleButtonClick = (ref) => {
+        if (ref.current) ref.current.click();
     };
 
     return (
@@ -68,15 +92,60 @@ const AddPost = ({ isVisible, closeAddPost, onPostCreated, topic_id, board, foru
                         />
                         <input
                             type="text"
-                            placeholder="any detail"
+                            placeholder="Any detail"
                             value={postDetail}
                             onChange={(e) => setPostDetail(e.target.value)}
                             className="w-full h-48 p-2 mb-4 rounded-md text-gray1 font-semibold text-lg border-2"
                         />
-                        <div className="w-full h-56 bg-white flex items-center justify-center mb-4 border-4 border-gray1 rounded-xl border-dashed">
-                            <span className="text-xl font-bold text-gray-500">Add a picture</span>
-                        </div>
+
+                        {preview && (
+                            <div className="w-full h-56 flex items-center justify-center mb-4 border-4 border-gray1 rounded-xl">
+                                <img src={preview} alt="Image Preview" className="w-full h-full object-cover p-2" />
+                            </div>
+                        )}
                         {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+                        {selectedFiles.length > 0 && (
+                            <div className="mt-4">
+                                <h4 className="font-semibold">Attached Files:</h4>
+                                <ul>
+                                    {selectedFiles.map((file, index) => (
+                                        <li key={index} className="text-sm text-gray-700">{file.name}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        <div className="flex space-x-4 mt-4">
+                            <button 
+                                onClick={() => handleButtonClick(picInputRef)}
+                                disabled={Boolean(selectedImage)} 
+                                className="w-10 h-10 flex items-center justify-center rounded-md"
+                            >
+                                <img 
+                                    src={selectedImage ? "/asset/addPic_disabled.png" : "/asset/addPic_enabled.png"} 
+                                    alt="Add Picture" 
+                                />
+                            </button>
+                            <button 
+                                onClick={() => handleButtonClick(fileInputRef)}
+                                className="w-10 h-10 flex items-center justify-center rounded-md"
+                            >
+                                <img src="/asset/addFile.png" alt="Add File" />
+                            </button>
+                        </div>
+                        <input
+                            ref={picInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                        />
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
                     </div>
                 </div>
             )}

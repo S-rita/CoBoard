@@ -6,10 +6,13 @@ import Body from './components/Board/Body';
 const Board = () => {
   const { board } = useParams();
   const [searchForumTerm, setSearchForumTerm] = useState('');
+  
   return (
-    <div>
-      <Header className="z-10" setSearchForumTerm={setSearchForumTerm} />
-      <Body board={board} className="z-0" searchForumTerm={searchForumTerm} />
+    <div className="h-screen w-full overflow-y-hidden">
+      <Header className="fixed top-0 left-0 right-0 z-10 h-36" setSearchForumTerm={setSearchForumTerm} />
+      <div className="h-full mt-2">
+        <Body board={board} searchForumTerm={searchForumTerm} />
+      </div>
     </div>
   );
 };

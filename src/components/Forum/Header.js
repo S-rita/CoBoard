@@ -6,12 +6,12 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [icon, setIcon] = useState(null);
-    const [font, setFont] = useState(0);
     const [creator_id, setCreatorID] = useState('12345678');
     const [createdTime, setCreatedTime] = useState(null);
     const [elapsedTime, setElapsedTime] = useState('');
     const [wallpaper, setWallpaper] = useState('#006b62');
     const [isSearchable, setSearchable] = useState(false);
+    const [totalContributors, setContributor] = useState(0); 
 
     const handleSearch = (event) => {
         setSearchTopicTerm(event.target.value);
@@ -24,13 +24,26 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
                 setTitle(response.forum_name);
                 setDescription(response.description);
                 setIcon(response.icon);
-                setFont(response.font);
                 setCreatorID(response.creator_id);
                 setWallpaper(response.wallpaper);
                 
-                // Parse the `created_time` to a Date object
                 const createdDate = new Date(response.created_time);
                 setCreatedTime(createdDate);
+
+                const contributorsSet = new Set();
+        
+                response.topics.forEach(topic => {              
+                    topic.posts.forEach(post => {
+                        contributorsSet.add(post.spost_creator || post.apost_creator);
+                        post.comments.forEach(comment => {
+                        contributorsSet.add(comment.scomment_creator || comment.acomment_creator);
+                        });
+                    });
+                });
+                console.log(contributorsSet);
+                contributorsSet.delete(creator_id);
+                console.log(contributorsSet);
+                setContributor(contributorsSet.size); // Total unique contributors
             } catch (error) {
                 console.error("Failed to load topics", error);
             }
@@ -76,7 +89,7 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center ml-6 -mt-3">
                             <h6 className="flex flex-col text-white text-lg font-bold">{creator_id}</h6>
-                            <h6 className="flex flex-col text-white text-lg font-bold ml-2">+11</h6>
+                            <h6 className="flex flex-col text-white text-lg font-bold ml-2">{totalContributors != 0 ? `+${totalContributors}` : ''}</h6>
                             <div className="flex flex-col h-2 w-2 ml-4 bg-black rounded-full"></div>
                             <h6 className="flex flex-col text-white text-lg font-bold ml-4">{elapsedTime}</h6>
                         </div>

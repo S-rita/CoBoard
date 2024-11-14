@@ -3,7 +3,7 @@ import HeadingSection from './HeadingSection';
 import AppearanceSection from './AppearanceSection';
 import AccessSection from './AccessSection';
 import TagSection from './TagSection';
-import { updateForum, fetchTopics } from '../../api';
+import { updateForum, fetchTopics, deleteAccess, createAccess } from '../../api';
 
 const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name}) => {
   const [activeSection, setActiveSection] = useState('heading');
@@ -17,6 +17,7 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name}) => {
   const [creator_id, setCreatorID] = useState('12345678');
   const [tags, setTags] = useState([]);
   const [btags, setBoardTag] = useState([]);
+  const [allowed, setAllowed] = useState([]);
   
   // Create references for each section and buttons
   const panelRef = useRef(null);
@@ -65,42 +66,61 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name}) => {
           setCreatorID(response.creator_id);
           setTags(response.tags);
           setBoardTag(response.btags);
+          setAllowed(response.access.user_id);
         } catch (error) {
           console.error("Failed to load topics", error);
         }
     };
 
     loadTopics();
-}, [board, forum_name]);
+  }, [board, forum_name]);
 
   const handleSubmit = async () => {
     if (title.trim() === '') {
-        alert('Title cannot be empty!');
-        return;
+      alert('Title cannot be empty!');
+      return;
     }
-  
+
     const forumData = {
       forum_name: title,
       description: description,
       icon: icon,
       wallpaper: wallpaper,
       font: font,
-      sortby: sortby,
-      access: access, // Include access in the data
-      creator_id: '12345678', // Replace with actual creator ID
-      board: board, // Include the board
-      tags: tags
+      sort_by: sortby,
+      creator_id: creator_id,
+      board: board,
+      tags: tags,
     };
-  
+
     try {
-        const updatedForum = await updateForum(board, forum_name, forumData);
-        console.log(forumData);
-        closeSettingPanel();
+      await deleteAccess(board, forum_name);
+
+      if (access === 0) {
+        for (const user_id of allowed) {
+          await createAccess(board, forum_name, user_id);
+        }
+      }
+
+      // Update the forum information
+      const updatedForum = await updateForum(board, forum_name, forumData);
+      console.log("updated:", forumData);
+
+      await deleteAccess(board, forum_name);
+
+      if (access === 0) {
+        for (const user_id of allowed) {
+          await createAccess(board, forum_name, user_id);
+        }
+      }
+
+      closeSettingPanel();
     } catch (error) {
-        console.error('Error updating forum:', error.response?.data);
-        alert('Error updating forum. Please try again.');
+      console.error('Error updating forum:', error.response?.data);
+      alert('Error updating forum. Please try again.');
     }
   };
+
   
   
 
@@ -162,10 +182,17 @@ const SettingPanel = ({ isVisible, closeSettingPanel, board, forum_name}) => {
               wallpaper={wallpaper}
               font={font}
               sortby = {sortby}
+              board={board} 
+              forum_name={forum_name}
             />
           </div>
           <div ref={accessRef}>
-            <AccessSection handleAccess={setAccess} />
+            <AccessSection 
+              handleAccess={setAccess} 
+              allowed={allowed} 
+              setAllowed={setAllowed} 
+              board={board} 
+              forum_name={forum_name} />
           </div>
           <div ref={tagsRef}>
             <TagSection tags={tags} btags={btags} setTags={setTags} />

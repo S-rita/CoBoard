@@ -5,7 +5,7 @@ import AddPost from './AddPost';
 import { fetchTopics, updateLike, addComment } from '../../api'; 
 import { UserContext } from '../../UserContext';
 
-const Body = ({ board, forum_name, searchTopicTerm=''}) => {
+const Body = ({ board, forum_name, searchTopicTerm = '' }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const [isCreateTopicVisible, setCreateTopicVisible] = useState(false);
     const [isAddPostVisible, setAddPostVisible] = useState(false);
@@ -17,6 +17,7 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
     const [expandedPosts, setExpandedPosts] = useState({});
     const [newComments, setNewComments] = useState({});
     const [sortOption, setSortOption] = useState('');
+    const [font, setFont] = useState(0);
     const navigate = useNavigate();
     const [creator_id, setCreatorID] = useState('12345678');
     const [default_sort, setDefaultSort] = useState(0);
@@ -29,17 +30,29 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
             setError('');
             try {
                 const response = await fetchTopics(board, forum_name);
-                console.log("API Response:", response);
                 
                 if (!response || typeof response !== 'object') {
                     throw new Error("Invalid response from server");
                 }
                 
                 setForumData(response);
-                setFilteredTopics(response.topics || []);
+                let topics = response.topics || [];
+
+                // Apply default sorting based on default_sort
+                if (default_sort === 0) {
+                    topics = topics.sort((a, b) => b.topic_id - a.topic_id);  // Latest by ID
+                } else if (default_sort === 1) {
+                    topics = topics.sort((a, b) => (b.heart || 0) - (a.heart || 0));  // Most likes
+                } else if (default_sort === 2) {
+                    topics = topics.sort((a, b) => (b.posts?.length || 0) - (a.posts?.length || 0));  // Most comments
+                }
+
+                setFilteredTopics(topics);
                 setCreatorID(response.creator_id);
+                setFont(response.font);
+                setDefaultSort(response.sort_by);
+                setSortOption(default_sort.toString()); // Initialize sort option based on default_sort
             } catch (error) {
-                console.error("Failed to load topics", error);
                 setError("Failed to load topics. " + (error.message || ''));
             } finally {
                 setLoading(false);
@@ -47,11 +60,11 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
         };
 
         loadTopics();
-    }, [board, forum_name]);
+    }, [board, forum_name, default_sort]);
 
     useEffect(() => {
         if (forumData && forumData.topics) {
-            let filtered = forumData.topics.filter(topic => 
+            let filtered = forumData.topics.filter(topic =>
                 topic.text.toLowerCase().includes(searchTopicTerm.toLowerCase())
             );
 
@@ -60,6 +73,8 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
                 filtered.sort((a, b) => b.topic_id - a.topic_id);
             } else if (sortOption === 'popular') {
                 filtered.sort((a, b) => (b.posts?.length || 0) - (a.posts?.length || 0));
+            } else if (sortOption === 'likes') {
+                filtered.sort((a, b) => (b.heart || 0) - (a.heart || 0));
             }
 
             setFilteredTopics(filtered);
@@ -225,7 +240,11 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
             ) : error ? (
                 <div>Error: {error}</div>
             ) : (
-                <div className="w-full h-screen relative overflow-auto">
+                <div
+                    className={`w-full h-screen relative overflow-auto ${
+                        font === 0 ? 'istok-web-regular' : font === 1 ? 'tinos-regular' : 'playpen-sans-regular'
+                    }`}
+                >
                     <div className="flex flex-row my-10">
                         {filteredTopics.map((topic) => (
                             <div key={topic.topic_id} className="topic-section flex flex-col">
@@ -251,6 +270,15 @@ const Body = ({ board, forum_name, searchTopicTerm=''}) => {
                                                 >
                                                     <h4 className="font-semibold">{post.post_head}</h4>
                                                     <p className="text-sm">{post.post_body}</p>
+                                                    <div>
+                                                        {post.pic && (
+                                                            <img
+                                                            src={`data:image/jpeg;base64,${post.pic}`}
+                                                                alt="Post image"
+                                                                className="w-full h-auto mt-2 rounded-md object-cover"
+                                                            />
+                                                        )}
+                                                    </div>
                                                     <div className="flex">
                                                         <p className="flex-col m-1">{post.heart}</p>
                                                         <button

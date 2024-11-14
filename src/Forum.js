@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './components/Forum/Header';
 import Body from './components/Forum/Body';
@@ -9,20 +9,24 @@ const Forum = () => {
   const [searchTopicTerm, setSearchTopicTerm] = useState('');
 
   return (
-    <div className="flex flex-row relative">
-      <div className="flex flex-col relative w-full h-fit">
-        <Header board={board} forum_name={forum_name} setSearchTopicTerm={setSearchTopicTerm} /> 
-        <Body 
+    <div className="flex flex-row relative w-full h-screen overflow-hidden">
+      <div className="flex flex-col w-full h-full">
+        <Header 
           board={board} 
           forum_name={forum_name} 
-          searchTopicTerm={searchTopicTerm}
-        />
+          setSearchTopicTerm={setSearchTopicTerm} 
+          className="fixed top-0 left-0 right-0 z-10" 
+        /> 
+        <div className="flex-1 overflow-y-auto mt-[calc(header-height)]">
+          <Body 
+            board={board} 
+            forum_name={forum_name} 
+            searchTopicTerm={searchTopicTerm}
+          />
+        </div>
       </div>
-      <div className="flex flex-col relative min-w-screen min-h-screen">
-        <Tab 
-          board={board} 
-          forum_name={forum_name} 
-        />  
+      <div className="flex flex-col min-w-screen min-h-screen overflow-hidden">
+        <Tab board={board} forum_name={forum_name} />  
       </div> 
     </div>
   );

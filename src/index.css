@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Merriweather:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&family=Quicksand:wght@300..700&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&family=Playpen+Sans:wght@100..800&family=Quicksand:wght@300..700&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Existing Tailwind and body styles */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,3 +21,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.istok-web-regular {
+  font-family: "Istok Web", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.istok-web-bold {
+  font-family: "Istok Web", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.tinos-regular {
+  font-family: "Tinos", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tinos-bold {
+  font-family: "Tinos", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.playpen-sans-regular {
+  font-family: "Playpen Sans", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.playpen-sans-bold {
+  font-family: "Playpen Sans", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+

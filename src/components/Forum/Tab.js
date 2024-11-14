@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import InfoPanel from './InfoPanel';
 import SharePanel from './SharePanel';
 import SettingPanel from './SettingPanel';
-import { fetchTopics } from '../../api';
+import { fetchTopics, addBookmark, deleteBookmark } from '../../api';
 import { UserContext } from '../../UserContext';
 
 const Tab = ({ board, forum_name }) => {
@@ -13,6 +13,8 @@ const Tab = ({ board, forum_name }) => {
   const navigate = useNavigate();
   const { user, status } = useContext(UserContext);
   const [creator_id, setCreatorID] = useState('12345678');
+  const [bookmark, setBookmark] = useState([]);
+  const [isBookmarked, setIsBookmarked] = useState(false); 
   const id = status === "se" ? user.sid : user.aid;
 
   useEffect(() => {
@@ -20,13 +22,17 @@ const Tab = ({ board, forum_name }) => {
         try {
           const response = await fetchTopics(board, forum_name);
           setCreatorID(response.creator_id);
+          const userBookmarks = status === "se" ? response.sbookmarks : response.abookmarks;
+          setBookmark(userBookmarks);
+          const userHasBookmarked = userBookmarks.some(bookmark => bookmark.user_id === id);
+          setIsBookmarked(userHasBookmarked);
         } catch (error) {
           console.error("Failed to load topics", error);
         }
     };
 
     loadTopics();
-  }, [board, forum_name]);
+  }, [board, forum_name, id, status]);
 
   const openInfoPanel = () => {
     setInfoPanelVisible(true);
@@ -36,8 +42,26 @@ const Tab = ({ board, forum_name }) => {
     setInfoPanelVisible(false);
   };
 
-  const openBookmarkPanel = () => {
-    alert('Opening Bookmark Panel');
+  const handleBookmarkToggle = async () => {
+    try {
+      if (isBookmarked) {
+        // If already bookmarked, remove the bookmark
+        await deleteBookmark(board, forum_name, id, status);
+        setIsBookmarked(false);
+      } else {
+        // If not bookmarked, add a new bookmark
+        const createdBookmark = await addBookmark(board, forum_name, id, status);
+        setIsBookmarked(true);
+        console.log('Created bookmark:', createdBookmark);
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error('Error updating bookmark:', error.response.data);
+      } else {
+        console.error('Error updating bookmark:', error.message);
+      }
+      alert('Error updating bookmark. Please try again.');
+    }
   };
 
   const openSharePanel = () => {
@@ -68,8 +92,11 @@ const Tab = ({ board, forum_name }) => {
           <button type="button" onClick={openInfoPanel} className="w-12 h-12 mt-16">
             <img src="/asset/i_button.svg" alt="Info Button" />
           </button>
-          <button type="button" onClick={openBookmarkPanel} className="w-12 h-12 mt-10">
-            <img src="/asset/bookmark_button.svg" alt="Bookmark Button" />
+          <button type="button" onClick={handleBookmarkToggle} className="w-12 h-12 mt-10">
+            <img 
+              src={isBookmarked ? "/asset/bookmarked_button.svg" : "/asset/bookmark_button.svg"} 
+              alt="Bookmark Button" 
+            />
           </button>
           <button type="button" onClick={openSharePanel} className="w-12 h-12 mt-10">
             <img src="/asset/share_button.svg" alt="Share Button" />

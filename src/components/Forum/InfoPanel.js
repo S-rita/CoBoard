@@ -3,14 +3,11 @@ import { fetchTopics } from '../../api';
 
 const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [icon, setIcon] = useState(null);
-  const [wallpaper, setWallpaper] = useState('#006b62');
-  const [font, setFont] = useState(0);
-  const [sortby, setSortBy] = useState(0);
   const [access, setAccess] = useState(0);
   const [creator_id, setCreatorID] = useState('12345678');
-  const [image, setImage] = useState('');
+  const [createdTime, setCreatedTime] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [topic, setTopic] = useState([]);
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
@@ -22,14 +19,17 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
       try {
         const response = await fetchTopics(board, forum_name);
         setTitle(response.forum_name);
-        setDescription(response.description);
         setIcon(response.icon);
-        setWallpaper(response.wallpaper);
-        setFont(response.font);
-        setSortBy(response.sortby);
         setCreatorID(response.creator_id);
         setTopic(response.topics);
-  
+        setAccess(response.access.map(item => item.user_id));
+
+        const createdDate = new Date(response.created_time);
+        setCreatedTime(createdDate);
+
+        const updatedDate = new Date(response.last_updated);
+        setLastUpdated(updatedDate);
+
         let postsCount = 0;
         let commentsCount = 0;
         let reactionsCount = 0;
@@ -40,14 +40,14 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
           
           topic.posts.forEach(post => {
             // Add the post creator to the contributors set
-            contributorsSet.add(post.s_creator || post.a_creator);
+            contributorsSet.add(post.spost_creator || post.apost_creator);
   
             commentsCount += post.comments.length;
             reactionsCount += post.heart;
   
             post.comments.forEach(comment => {
               // Add the comment creator to the contributors set
-              contributorsSet.add(comment.comment_creator);
+              contributorsSet.add(comment.scomment_creator || comment.acomment_creator);
               reactionsCount += comment.comment_heart;
             });
           });
@@ -56,7 +56,8 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
         setTotalPosts(postsCount);
         setTotalComments(commentsCount);
         setTotalReactions(reactionsCount);
-        setContributor(contributorsSet.size); // Total unique contributors
+        setContributor(contributorsSet.size);
+        console.log(contributorsSet);
   
       } catch (error) {
         console.error("Failed to load topics", error);
@@ -65,13 +66,6 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
   
     loadTopics();
   }, [board, forum_name]);
-  
-
-  useEffect(() => {
-    if (icon) {
-        setImage(`data:image/jpeg;base64,${icon}`);
-    }
-  }, [icon]);
 
   if (!isVisible) return null;
 
@@ -105,21 +99,33 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Made on</p>
-            <p className="text-lg font-semibold text-black">12 January 2023</p>
+            <p className="text-lg font-semibold text-black">
+              {createdTime.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </p>
           </div>
           <div className="my-4 flex justify-center">
             <div className="w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Last update on</p>
-            <p className="text-lg font-semibold text-black">13 September 2024</p>
+            <p className="text-lg font-semibold text-black">
+              {lastUpdated.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </p>
           </div>
           <div className="my-4 flex justify-center">
             <div className="w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Access</p>
-            <p className="text-lg font-semibold text-black">Public</p>
+            <p className="text-lg font-semibold text-black">{access.length !== 0 ? 'Private' : 'Public'}</p>
           </div>
         </div>
         <div className="w-500 h-fit bg-lightorange mt-6 rounded-2xl py-4 px-10 flex flex-col items-center">

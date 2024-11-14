@@ -86,3 +86,5 @@ __pycache__/
 migrations/
 versions/
 alembic.ini
+
+/uploads/

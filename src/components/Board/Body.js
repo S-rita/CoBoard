@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import LeftTab from './LeftTab';
 import MainBody from './MainBody';
 
@@ -7,8 +7,12 @@ const Body = ({ board, searchForumTerm }) => {
 
   return (
     <div className="w-full h-full flex flex-row">
-      <LeftTab board={board} setTagFiltered={setTagFiltered} />
-      <MainBody board={board} searchForumTerm={searchForumTerm} tagfiltered={tagfiltered} />
+      <div className="w-1/4 h-screen sticky top-0">
+        <LeftTab board={board} setTagFiltered={setTagFiltered} />
+      </div>
+      <div className="flex-grow overflow-y-auto">
+        <MainBody board={board} searchForumTerm={searchForumTerm} tagfiltered={tagfiltered} />
+      </div>
     </div>
   );
 };

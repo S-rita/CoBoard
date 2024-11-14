@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import LoginPage from "./Login";
 import SignupPage from "./Signup";
-import { fetchUsers } from "../../api";
+import { fetchUsers, createAnonymousUser } from "../../api";
 import { UserContext } from '../../UserContext';
 
 const MainBody = () => {
@@ -76,7 +76,7 @@ const MainBody = () => {
     if (user && ((type === "se" && user.spw === password) || (type === "anonymous" && user.apw === password))) {
       setUser(user);
       setStatus(type === "se" ? "se" : "a");
-      return type === "se" ? user.sid : "a";
+      return type === "se" ? user.sid : user.aid;
     }
 
     return null;
@@ -94,7 +94,14 @@ const MainBody = () => {
       return false;
     }
 
-    return true; // This is where you would add logic to save the new user
+    const userData = {
+      aid: username,
+      apw: password
+    }
+
+    createAnonymousUser(userData);
+
+    return true;
   };
 
   const submitForm = () => {
@@ -106,7 +113,9 @@ const MainBody = () => {
     } else {
       // For signup, validate input and prevent duplicate usernames
       if (validateSignUp(username, password, anonymous)) {
-        // Simulate user signup logic here
+        setUser({ aid: username, apw: password }); // This sets the new user in context
+        setStatus("a");
+        clearInputs(); // Reset input fields after successful signup
         alert("Signup successful!");
         navigate(`/index`);
         return;

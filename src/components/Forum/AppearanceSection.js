@@ -1,8 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchTopics } from '../../api';
 
-const AppearanceSection = ({ setWallpaper, setFont, setSortBy, wallpaper, font, sortby }) => {
+const AppearanceSection = ({ setWallpaper, setFont, setSortBy, wallpaper, font, sortby, board, forum_name }) => {
   const [sortDropdownVisible, setSortDropdownVisible] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ text: 'Select Sort', icon: null });
+
+  useEffect(() => {
+    const loadTopics = async () => {
+      try {
+        const response = await fetchTopics(board, forum_name);
+
+        setWallpaper(response.wallpaper);
+        setFont(response.font);
+        setSortBy(response.sort_by);
+      } catch (error) {
+        console.error("Failed to load topics", error);
+      }
+    };
+    loadTopics();
+  }, [board, forum_name]);
+
+  // Update selected sort when sortby changes
+  useEffect(() => {
+    if (sortby === 0) {
+      setSelectedSort({ text: 'Latest', icon: '/asset/lastest_icon.svg' });
+    } else if (sortby === 1) {
+      setSelectedSort({ text: 'Likes', icon: '/asset/heart_icon.svg' });
+    } else if (sortby === 2) {
+      setSelectedSort({ text: 'Comments', icon: '/asset/comment_icon.svg' });
+    }
+  }, [sortby]);
 
   const handleSortSelection = (sortby, text, icon) => {
     setSortBy(sortby); // Send the sort selection back to parent

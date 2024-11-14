@@ -129,3 +129,78 @@ export const fetchUsers = async () => {
     throw new Error('Failed to fetch user.');
   }
 };
+
+// Add bookmark
+export const addBookmark = async (board, forum_name, userID, userStatus) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/coboard/${board}/${forum_name}`, {
+      user_id: userID,
+      status: userStatus,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding bookmark:', error);
+    throw new Error('Failed to fetch user.');
+  }
+};
+
+export const deleteBookmark = async (board, forum_name, user_id, status) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/coboard/${board}/${forum_name}`, 
+      {
+        params: { status, user_id }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting bookmark:", error);
+    throw error;
+  }
+};
+
+export const deleteAccess = async (board, forum_name) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/coboard/${board}/${forum_name}/setting`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting bookmark:", error);
+    throw error;
+  }
+};
+
+export const createAccess = async (board, forum_name, userID) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/coboard/${board}/${forum_name}/setting`, null, {
+      params: { user_id: userID }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating access:', error);
+    throw new Error('Failed to create access.');
+  }
+};
+
+export const deleteForum = async (forum_id, sid) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/user/${sid}`, null, {
+        params: { forum_id: forum_id }
+      });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting forum:", error);
+    throw error;
+  }
+}
+
+export const createAnonymousUser = async (userData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/signup`, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
