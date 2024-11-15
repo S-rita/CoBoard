@@ -1,6 +1,6 @@
 import React from "react";
 
-const SignupPage = ({ username, password, setUsername, setPassword, submitForm, showPassword, toggleShowPassword }) => {
+const SignupPage = ({ username, email, password, setUsername, setEmail, setPassword, submitForm, showPassword, toggleShowPassword }) => {
   return (
     <div id="signupInputs" className="flex flex-col items-center mt-10 relative">
       <input
@@ -8,6 +8,13 @@ const SignupPage = ({ username, password, setUsername, setPassword, submitForm, 
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        className="w-[320px] h-[45px] p-[10px] mb-2.5 border-2 border-[#a2a4a7] font-bold text-[18px] rounded-[16px] placeholder-[#acaeb1]"
+      />
+      <input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         className="w-[320px] h-[45px] p-[10px] mb-2.5 border-2 border-[#a2a4a7] font-bold text-[18px] rounded-[16px] placeholder-[#acaeb1]"
       />
       <div className="relative w-[320px]">
