@@ -9,6 +9,7 @@ const MainBody = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [se, setSE] = useState([]);
   const [anonymous, setAnonymous] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,10 @@ const MainBody = () => {
   const setLogin = () => {
     setIsLogin(true);
     clearInputs();
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const validateUser = (username, password, users, type) => {
@@ -194,6 +199,9 @@ const MainBody = () => {
                 setUsername={setUsername}
                 setPassword={setPassword}
                 submitForm={submitForm}
+                showPassword={showPassword}
+                toggleShowPassword={toggleShowPassword} // Pass the function down
+
               />
             ) : (
               <SignupPage
@@ -202,6 +210,9 @@ const MainBody = () => {
                 setUsername={setUsername}
                 setPassword={setPassword}
                 submitForm={submitForm}
+                showPassword={showPassword}
+                toggleShowPassword={toggleShowPassword} // Pass the function down
+
               />
             )}
           </div>
