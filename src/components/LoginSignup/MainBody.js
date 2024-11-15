@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
 import LoginPage from "./Login";
 import SignupPage from "./Signup";
-import { fetchUsers, createAnonymousUser } from "../../api";
-import { UserContext } from '../../UserContext';
 
 const MainBody = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const [se, setSE] = useState([]);
-  const [anonymous, setAnonymous] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const { setUser, setStatus } = useContext(UserContext);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -27,29 +19,12 @@ const MainBody = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const loadUsers = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await fetchUsers();
-        if (!response || typeof response !== 'object') {
-          throw new Error("Invalid response from server");
-        }
-        console.log(response);
-        setSE(response.se);
-        setAnonymous(response.anonymous);
-      } catch (error) {
-        console.error("Failed to load users", error);
-        setError("Failed to load users. " + (error.message || ''));
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadUsers();
-  }, []);
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const clearInputs = () => {
+    setEmail("");
     setUsername("");
     setPassword("");
   };
@@ -64,75 +39,18 @@ const MainBody = () => {
     clearInputs();
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const validateUser = (username, password, users, type) => {
-    if (!users || !Array.isArray(users)) {
-      return null; // Return null if users array is not available or not an array
-    }
-
-    const user = users.find((user) =>
-      (type === "se" && user.sid === username) ||
-      (type === "anonymous" && user.aid === username)
-    );
-
-    if (user && ((type === "se" && user.spw === password) || (type === "anonymous" && user.apw === password))) {
-      setUser(user);
-      setStatus(type === "se" ? "se" : "a");
-      return type === "se" ? user.sid : user.aid;
-    }
-
-    return null;
-  };
-
-  const validateSignUp = (username, password, users) => {
-    if (!username || !password) {
-      setError('Username and password cannot be empty.');
-      return false;
-    }
-
-    const userExists = users.some(user => user.aid === username);
-    if (userExists) {
-      setError('Username already exists.');
-      return false;
-    }
-
-    const userData = {
-      aid: username,
-      apw: password
-    }
-
-    createAnonymousUser(userData);
-
-    return true;
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const submitForm = () => {
-    let loginStatus = null;
-
-    if (isLogin) {
-      // Check if username is in se or anonymous and verify password
-      loginStatus = validateUser(username, password, se, "se") || validateUser(username, password, anonymous, "anonymous");
-    } else {
-      // For signup, validate input and prevent duplicate usernames
-      if (validateSignUp(username, password, anonymous)) {
-        setUser({ aid: username, apw: password }); // This sets the new user in context
-        setStatus("a");
-        clearInputs(); // Reset input fields after successful signup
-        alert("Signup successful!");
-        navigate(`/index`);
-        return;
-      }
+    if (!validateEmail(email) && !isLogin) {
+      alert("Invalid email format! Please enter a valid email.");
+      return;
     }
-
-    if (loginStatus) {
-      alert("Login successful!");
-      navigate(`/index`);
-    } else {
-      setError("Invalid username or password.");
-    }
+    alert("Form submitted!");
+    window.location.href = "/";
   };
 
   return (
@@ -201,18 +119,18 @@ const MainBody = () => {
                 submitForm={submitForm}
                 showPassword={showPassword}
                 toggleShowPassword={toggleShowPassword} // Pass the function down
-
               />
             ) : (
               <SignupPage
                 username={username}
+                email={email}
                 password={password}
                 setUsername={setUsername}
+                setEmail={setEmail}
                 setPassword={setPassword}
                 submitForm={submitForm}
                 showPassword={showPassword}
                 toggleShowPassword={toggleShowPassword} // Pass the function down
-
               />
             )}
           </div>
