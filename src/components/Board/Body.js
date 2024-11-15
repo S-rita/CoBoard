@@ -10,7 +10,7 @@ const Body = ({ board, searchForumTerm }) => {
       <div className="w-1/4 h-screen sticky top-0">
         <LeftTab board={board} setTagFiltered={setTagFiltered} />
       </div>
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto mb-40">
         <MainBody board={board} searchForumTerm={searchForumTerm} tagfiltered={tagfiltered} />
       </div>
     </div>

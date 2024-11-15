@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
-import { createPost } from '../../api'; 
+import { createPost, uploadFile } from '../../api'; 
 import { UserContext } from '../../UserContext';
 
 const AddPost = ({ isVisible, closeAddPost, onPostCreated, topic_id, board, forum_name }) => {
@@ -32,13 +32,26 @@ const AddPost = ({ isVisible, closeAddPost, onPostCreated, topic_id, board, foru
         try {
             const createdPost = await createPost(board, forum_name, topic_id, postData);
             console.log('Created post:', createdPost);
-            onPostCreated(createdPost);
+
+            if (selectedFiles.length > 0) {
+                for (const file of selectedFiles) {
+                    const sid = status === "se" ? user.sid : null;
+                    const aid = status === "a" ? user.aid : null;
+                    const fileData = new FormData();
+                    fileData.append('file', file);
+                    fileData.append('s_owner', sid);
+                    fileData.append('a_owner', aid);
+                    fileData.append('post_id', createdPost.post_id);
+                  await uploadFile(fileData);
+                }
+            }
       
             setPostText('');
             setPostDetail('');
             setSelectedImage(null);
             setPreview(null);
             setSelectedFiles([]);
+            onPostCreated(createdPost);
             closeAddPost();
         } catch (error) {
             console.error('Error creating post:', error.response?.data || error.message);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateTopic from './CreateTopic';
 import AddPost from './AddPost';
-import { fetchTopics, updateLike, addComment } from '../../api'; 
+import { fetchTopics, updateLike, addComment, downloadFile } from '../../api'; 
 import { UserContext } from '../../UserContext';
 
 const Body = ({ board, forum_name, searchTopicTerm = '' }) => {
@@ -37,6 +37,7 @@ const Body = ({ board, forum_name, searchTopicTerm = '' }) => {
                 
                 setForumData(response);
                 let topics = response.topics || [];
+                console.log(response);
 
                 // Apply default sorting based on default_sort
                 if (default_sort === 0) {
@@ -51,7 +52,7 @@ const Body = ({ board, forum_name, searchTopicTerm = '' }) => {
                 setCreatorID(response.creator_id);
                 setFont(response.font);
                 setDefaultSort(response.sort_by);
-                setSortOption(default_sort.toString()); // Initialize sort option based on default_sort
+                setSortOption(default_sort.toString());
             } catch (error) {
                 setError("Failed to load topics. " + (error.message || ''));
             } finally {
@@ -246,100 +247,142 @@ const Body = ({ board, forum_name, searchTopicTerm = '' }) => {
                     }`}
                 >
                     <div className="flex flex-row my-10">
-                        {filteredTopics.map((topic) => (
-                            <div key={topic.topic_id} className="topic-section flex flex-col">
-                                <div className="topic-card w-72 h-24 bg-white rounded-2xl m-6 p-6 relative flex items-center justify-between">
-                                    <h2 className="text-xl font-bold self-start h-full flex items-center justify-start">
-                                        {topic.text}
-                                    </h2>
-                                    <div className="border-4 border-basegreen w-7 h-7 rounded-md rounded-bl-none absolute top-0 right-0 m-4 flex items-center justify-center">
-                                        <button
-                                            onClick={() => openAddPost(topic.topic_id)}
-                                            className="text-basegreen text-2xl font-extrabold -mt-1"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="post-section ml-6 mt-3">
-                                    {topic.posts && topic.posts.length > 0 ? (
-                                        topic.posts.map((post) => (
-                                            <div key={post.post_id} className="mb-4">
-                                                <div
-                                                    className="post-card flex flex-col p-3 border rounded-lg bg-gray-100 shadow w-72 h-fit mt-2 cursor-pointer"
+                        {filteredTopics
+                            .filter((topic) => {
+                                const now = new Date();
+                                const publishDate = topic.publish ? new Date(topic.publish) : null;
+
+                                // Normalize dates to ignore time
+                                const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                const publishDateOnly = publishDate
+                                    ? new Date(publishDate.getFullYear(), publishDate.getMonth(), publishDate.getDate())
+                                    : null;
+
+                                // Exclude if publish date is in the future
+                                return !publishDateOnly || publishDateOnly <= nowDateOnly;
+                            })
+                            .map((topic) => {
+                                const now = new Date();
+                                const expiredDate = topic.expired ? new Date(topic.expired) : null;
+
+                                // Normalize dates to ignore time
+                                const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                const expiredDateOnly = expiredDate
+                                    ? new Date(expiredDate.getFullYear(), expiredDate.getMonth(), expiredDate.getDate())
+                                    : null;
+
+                                const isTopicExpired = expiredDateOnly && expiredDateOnly <= nowDateOnly;
+
+                                return (
+                                    <div key={topic.topic_id} className="topic-section flex flex-col">
+                                        <div className="topic-card w-72 h-24 bg-white rounded-2xl m-6 p-6 relative flex items-center justify-between">
+                                            <h2 className="text-xl font-bold self-start h-full flex items-center justify-start">
+                                                {topic.text}
+                                            </h2>
+                                            <div className="border-4 border-basegreen w-7 h-7 rounded-md rounded-bl-none absolute top-0 right-0 m-4 flex items-center justify-center">
+                                                <button
+                                                    onClick={() => !isTopicExpired && openAddPost(topic.topic_id)}
+                                                    className={`text-basegreen text-2xl font-extrabold -mt-1 ${isTopicExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    disabled={isTopicExpired}
                                                 >
-                                                    <h4 className="font-semibold">{post.post_head}</h4>
-                                                    <p className="text-sm">{post.post_body}</p>
-                                                    <div>
-                                                        {post.pic && (
-                                                            <img
-                                                            src={`data:image/jpeg;base64,${post.pic}`}
-                                                                alt="Post image"
-                                                                className="w-full h-auto mt-2 rounded-md object-cover"
-                                                            />
-                                                        )}
-                                                    </div>
-                                                    <div className="flex">
-                                                        <p className="flex-col m-1">{post.heart}</p>
-                                                        <button
-                                                            className="flex-col w-5 h-5 m-1 mt-2"
-                                                            onClick={() => updateLiked(post.post_id, 'post')}
-                                                        >
-                                                            <img src="/asset/heart_icon.svg" className="w-full h-full" alt="Like post" />
-                                                        </button>
-                                                        <p className="flex-col m-1">{post.comments.length}</p>
-                                                        <button
-                                                            className="flex-col w-5 h-5 m-1 mt-2"
-                                                            onClick={() => toggleComments(post.post_id)}
-                                                        >
-                                                            <img src="/asset/comment_icon.svg" className="w-full h-full" alt="Comment post" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                {expandedPosts[post.post_id] && (
-                                                    <div className="comments-section ml-4 mt-2">
-                                                        {post.comments.map((comment, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="comment-card flex flex-col p-3 border rounded-lg bg-white shadow w-64 h-fit mt-2"
-                                                            >
-                                                                <p className="text-sm">{comment.comment_text}</p>
-                                                                <div className="flex">
-                                                                    <p className="flex-col m-1">{comment.comment_heart}</p>
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="post-section ml-6 mt-3">
+                                            {topic.posts && topic.posts.length > 0 ? (
+                                                topic.posts.map((post) => (
+                                                    <div key={post.post_id} className="mb-4">
+                                                        <div className="post-card flex flex-col p-3 border rounded-lg bg-gray-100 shadow w-72 h-fit mt-2 cursor-pointer">
+                                                            <h4 className="font-semibold">{post.post_head}</h4>
+                                                            <p className="text-sm">{post.post_body}</p>
+                                                            {post.pic && (
+                                                                <img
+                                                                    src={`data:image/jpeg;base64,${post.pic}`}
+                                                                    alt="Post image"
+                                                                    className="w-full h-auto mt-2 rounded-md object-cover"
+                                                                />
+                                                            )}
+                                                            {post.files && post.files.length > 0 && (
+                                                                <div className="files-section mt-2">
+                                                                    <ul>
+                                                                        {post.files.map((file) => (
+                                                                            <li key={file.file_id} className="file-item mt-2">
+                                                                                <button
+                                                                                    onClick={() => downloadFile(file.file_id)}
+                                                                                    className="text-blue-500 hover:underline"
+                                                                                >
+                                                                                    {file.filename}
+                                                                                </button>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex">
+                                                                <p className="flex-col m-1">{post.heart}</p>
+                                                                <button
+                                                                    className={`flex-col w-5 h-5 m-1 mt-2 ${isTopicExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                                    onClick={() => !isTopicExpired && updateLiked(post.post_id, 'post')}
+                                                                    disabled={isTopicExpired}
+                                                                >
+                                                                    <img src="/asset/heart_icon.svg" className="w-full h-full" alt="Like post" />
+                                                                </button>
+                                                                <p className="flex-col m-1">{post.comments.length}</p>
+                                                                <button
+                                                                    className={`flex-col w-5 h-5 m-1 mt-2 ${isTopicExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                                    onClick={() => !isTopicExpired && toggleComments(post.post_id)}
+                                                                    disabled={isTopicExpired}
+                                                                >
+                                                                    <img src="/asset/comment_icon.svg" className="w-full h-full" alt="Comment post" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        {expandedPosts[post.post_id] && !isTopicExpired && (
+                                                            <div className="comments-section ml-4 mt-2">
+                                                                {post.comments.map((comment, index) => (
+                                                                    <div key={index} className="comment-card flex flex-col p-3 border rounded-lg bg-white shadow w-64 h-fit mt-2">
+                                                                        <p className="text-sm">{comment.comment_text}</p>
+                                                                        <div className="flex">
+                                                                            <p className="flex-col m-1">{comment.comment_heart}</p>
+                                                                            <button
+                                                                                className="flex-col w-5 h-5 m-1 mt-2"
+                                                                                onClick={() => !isTopicExpired && updateLiked(comment.comment_id, 'comment')}
+                                                                                disabled={isTopicExpired}
+                                                                            >
+                                                                                <img src="/asset/heart_icon.svg" className="w-full h-full" alt="Like comment" />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                                <div className="new-comment-input mt-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={newComments[post.post_id] || ''}
+                                                                        onChange={(e) => handleCommentChange(post.post_id, e.target.value)}
+                                                                        placeholder="Add a comment..."
+                                                                        className="w-full p-2 border rounded"
+                                                                        disabled={isTopicExpired}
+                                                                    />
                                                                     <button
-                                                                        className="flex-col w-5 h-5 m-1 mt-2"
-                                                                        onClick={() => updateLiked(comment.comment_id, 'comment')}
+                                                                        onClick={() => !isTopicExpired && submitComment(post.post_id)}
+                                                                        className={`mt-2 bg-basegreen text-white p-2 rounded ${isTopicExpired ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                                        disabled={isTopicExpired}
                                                                     >
-                                                                        <img src="/asset/heart_icon.svg" className="w-full h-full" alt="Like comment" />
+                                                                        Submit Comment
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        ))}
-                                                        <div className="new-comment-input mt-2">
-                                                            <input
-                                                                type="text"
-                                                                value={newComments[post.post_id] || ''}
-                                                                onChange={(e) => handleCommentChange(post.post_id, e.target.value)}
-                                                                placeholder="Add a comment..."
-                                                                className="w-full p-2 border rounded"
-                                                            />
-                                                            <button
-                                                                onClick={() => submitComment(post.post_id)}
-                                                                className="mt-2 bg-basegreen text-white p-2 rounded"
-                                                            >
-                                                                Submit Comment
-                                                            </button>
-                                                        </div>
+                                                        )}
                                                     </div>
-                                                )}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No posts yet for this topic.</p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                                                ))
+                                            ) : (
+                                                <p>No posts yet for this topic.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             )}

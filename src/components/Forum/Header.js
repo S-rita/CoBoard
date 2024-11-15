@@ -50,7 +50,7 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
         };
       
         loadTopics();
-    }, [board, forum_name]);
+    }, [board, forum_name, creator_id]);
 
     // Use effect to calculate elapsed time when `createdTime` is set
     useEffect(() => {
@@ -62,7 +62,7 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
 
     return (
         <div 
-            className="w-full h-56 shadow-2xl sticky top-0 left-0"
+            className="w-full h-52 shadow-2xl sticky top-0 left-0"
             style={{ backgroundColor: wallpaper || 'defaultColor' }}
         >
             <a href="/discussion" target="_self">
@@ -89,7 +89,7 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center ml-6 -mt-3">
                             <h6 className="flex flex-col text-white text-lg font-bold">{creator_id}</h6>
-                            <h6 className="flex flex-col text-white text-lg font-bold ml-2">{totalContributors != 0 ? `+${totalContributors}` : ''}</h6>
+                            <h6 className="flex flex-col text-white text-lg font-bold ml-2">{totalContributors !== 0 ? `+${totalContributors}` : ''}</h6>
                             <div className="flex flex-col h-2 w-2 ml-4 bg-black rounded-full"></div>
                             <h6 className="flex flex-col text-white text-lg font-bold ml-4">{elapsedTime}</h6>
                         </div>

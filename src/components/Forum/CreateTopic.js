@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
-import SetSchedule from './SetSchedule';  // Import SetSchedule component
+import SetSchedule from './SetSchedule'; 
+import { AddTopic } from '../../api'
 
 const CreateTopic = ({ isVisible, closeCreateTopic, onCreateTopic, board, forum_name }) => {
-    const [topicText, setTopicText] = useState(''); // Rename to topicText for clarity
+    const [topicText, setTopicText] = useState('');
+    const [publishDate, setPublish] = useState(null);
+    const [expiredDate, setExpired] = useState(null);
     const [isScheduleVisible, setScheduleVisible] = useState(false);  
     const [errorMessage, setErrorMessage] = useState('');  
 
     const handlePublish = async () => {
         if (topicText.trim()) {
             try {
-                const response = await fetch(`http://localhost:8000/coboard/${board}/${forum_name}/topic`, { // Ensure the URL is correct
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: topicText }), // Send topic text in the correct format
-                });
-
-                // Check response status
-                if (!response.ok) {
-                    const errorResult = await response.json();
-                    setErrorMessage(errorResult.detail || 'Error creating topic');
-                    return;
+                const topicData = {
+                    text: topicText,
+                    publish: publishDate,
+                    expired: expiredDate
                 }
-
-                const result = await response.json();
+                const response = await AddTopic(board, forum_name, topicData);
 
                 // Call parent function to update the topics list
-                onCreateTopic(result);
+                onCreateTopic(response);
                 closeCreateTopic();
                 setTopicText(''); // Reset the input field
             } catch (error) {
-                console.error('Error creating topic:', error);
+                console.error('Error creating topic:', error.response);
                 setErrorMessage('Failed to create topic. Please try again later.');
             }
         } else {
@@ -80,7 +73,14 @@ const CreateTopic = ({ isVisible, closeCreateTopic, onCreateTopic, board, forum_
                 </div>
             )}
             {/* SetSchedule modal */}
-            <SetSchedule isVisible={isScheduleVisible} closeSchedule={closeScheduleModal} />
+            <SetSchedule 
+                isVisible={isScheduleVisible} 
+                closeSchedule={closeScheduleModal} 
+                publishDate={publishDate}
+                setPublish={setPublish}
+                expiredDate={expiredDate}
+                setExpired={setExpired}
+            />
         </>
     );
 };

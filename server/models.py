@@ -23,6 +23,7 @@ class AnonymousUser(Base):
     aid = Column(String(10), primary_key=True, index=True)
     apw = Column(String(255), nullable=False)
     aprofile = Column(LargeBinary)
+    mail = Column(String(255), nullable=False)
 
 # Comment model
 class Comment(Base):
@@ -59,7 +60,6 @@ class Forum(Base):
     slug = Column(String(255), nullable=False, unique=True)
     board = Column(String(255), nullable=False)
     last_updated = Column(Date, nullable=False, default=func.current_date())
-    expired = Column(Date)
 
     # Updated topics relationship
     topics = relationship("Topic", secondary="forum_topic", back_populates="forums")
@@ -96,7 +96,6 @@ class Post(Base):
     spost_creator = Column(String(10), ForeignKey('se_user.sid'), nullable=True)
     apost_creator = Column(String(10), ForeignKey('anonymous_user.aid'), nullable=True)
     pic = Column(LargeBinary)
-    publish = Column(Date)
 
     __table_args__ = (
         CheckConstraint(
@@ -151,6 +150,8 @@ class Topic(Base):
     
     topic_id = Column(Integer, primary_key=True, index=True)
     text = Column(String(255), nullable=False)
+    publish = Column(Date)
+    expired = Column(Date)
 
     # Correct relationship
     forums = relationship("Forum", secondary="forum_topic", back_populates="topics")
@@ -173,5 +174,6 @@ class File(Base):
     filename = Column(String, unique=True, index=True)
     path = Column(String)
     extension = Column(String)
-    owner = Column(String, ForeignKey('se_user.sid'))
+    s_owner = Column(String, ForeignKey('se_user.sid'))
+    a_owner = Column(String, ForeignKey('anonymous_user.aid'))
     post_id = Column(Integer, ForeignKey('post.post_id'))

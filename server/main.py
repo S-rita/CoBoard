@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Body, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Body, Form, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
@@ -15,6 +15,7 @@ import os
 from mimetypes import guess_type
 from datetime import date
 from pathlib import Path
+import urllib.parse
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,6 +27,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"]
 )
 
 models.Base.metadata.create_all(bind=engine)
@@ -205,12 +207,10 @@ async def get_topics(
         if db_forum.icon:
             response_data['icon'] = base64.b64encode(db_forum.icon).decode('utf-8')
 
-        # Adjust tag query to correctly join with Forum and get relevant tags
+        # Fetch associated tags
         tags = db.query(models.Tag).join(models.ForumTag).filter(
             models.ForumTag.forum_id == db_forum.forum_id
         ).all()
-
-        # Manually construct the list of tags as dictionaries
         tag_data = [tag.__dict__.copy() for tag in tags]
 
         board_tag = db.query(models.Tag).filter(models.Tag.board == board).order_by(desc(models.Tag.use)).all()
@@ -225,7 +225,7 @@ async def get_topics(
         access = db.query(models.Access).filter(models.Access.forum_id == db_forum.forum_id).all()
         access_data = [schemas.Access(**a.__dict__) for a in access]
         
-        # Get topics associated with the forum
+        # Fetch topics associated with the forum
         topics = db.query(models.Topic).join(models.ForumTopic).filter(
             models.ForumTopic.forum_id == db_forum.forum_id
         ).all()
@@ -248,8 +248,12 @@ async def get_topics(
                 comments = db.query(models.Comment).join(models.PostComment).filter(
                     models.PostComment.post_id == post.post_id
                 ).all()
-                
                 post_dict['comments'] = [comment.__dict__.copy() for comment in comments]
+                
+                # Fetch files for each post
+                files = db.query(models.File).filter(models.File.post_id == post.post_id).all()               
+                post_dict['files'] = [file.__dict__.copy() for file in files]
+
                 post_data.append(post_dict)
             
             topic_dict['posts'] = post_data
@@ -276,7 +280,7 @@ async def create_topic(board: str, forum_name: str, topic_data: schemas.TopicCre
     if not forum:
         raise HTTPException(status_code=404, detail="Forum not found")
 
-    new_topic = models.Topic(text=topic_data.text)
+    new_topic = models.Topic(text=topic_data.text, publish=topic_data.publish, expired=topic_data.expired)
     db.add(new_topic)
     db.commit()
     db.refresh(new_topic)
@@ -786,7 +790,8 @@ async def create_anonymousUser(user: schemas.AnonymousUserCreate, db: Session = 
     try:     
         new_user = models.AnonymousUser(
             aid=user.aid,
-            apw=user.apw
+            apw=user.apw,
+            mail=user.mail
         )
         
         # Add the forum to the session and commit to get the forum_id
@@ -807,38 +812,89 @@ async def create_anonymousUser(user: schemas.AnonymousUserCreate, db: Session = 
         error_msg = f"Unexpected error while creating user: {str(e)}"
         raise HTTPException(status_code=500, detail=error_msg)
 
+# route to upload file
 @app.post("/file")
-async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
+async def upload_file(
+    file: UploadFile = File(...),
+    s_owner: str = Form(...),
+    a_owner: str = Form(...),
+    post_id: str = Form(...),
+    db: Session = Depends(get_db)
+):
     # Extract the file extension
     extension = os.path.splitext(file.filename)[1][1:]
 
-    # Save the file to disk
-    file_location = os.path.join(UPLOAD_DIR, file.filename)
-    with open(file_location, "wb") as buffer:
+    # Temporarily save the file with a basic name
+    temp_location = os.path.join(UPLOAD_DIR, file.filename)
+    with open(temp_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     # Create a new File record in the database
-    new_file = models.File(filename=file.filename, path=file_location, extension=extension)
+    new_file = models.File(
+        filename=file.filename,
+        path="",  # Temporary path, will update after renaming
+        extension=extension,
+        s_owner=s_owner if s_owner != 'null' else None,
+        a_owner=a_owner if a_owner != 'null' else None,
+        post_id=post_id
+    )
     db.add(new_file)
     db.commit()
     db.refresh(new_file)
 
-    return {"filename": file.filename, "file_path": new_file.path}
+    owner = s_owner if s_owner is not None else a_owner
 
+    # Generate a unique filename: {file_id}_{owner}_{original_filename}
+    unique_filename = f"{new_file.file_id}_{owner}_{file.filename}"
+    final_location = os.path.join(UPLOAD_DIR, unique_filename)
+    
+    # Rename the temporary file to the final location
+    os.rename(temp_location, final_location)
+
+    # Update the file path in the database
+    new_file.path = final_location
+    db.commit()
+    db.refresh(new_file)
+
+    return {"filename": unique_filename, "file_path": new_file.path}
+
+# Route to download file
 @app.get("/file/{file_id}")
 async def get_file(file_id: int, db: Session = Depends(get_db)):
-    # Retrieve file record from the database
+    # Retrieve file record
     file_record = db.query(models.File).filter(models.File.file_id == file_id).first()
     if not file_record:
         raise HTTPException(status_code=404, detail="File not found")
-
-    # Determine the MIME type based on the stored file extension
+    
+    # Check if file exists on disk
+    if not os.path.exists(file_record.path):
+        raise HTTPException(status_code=404, detail="File not found on disk")
+    
+    # Use the original filename stored in the database
+    original_filename = file_record.filename
+    encoded_filename = urllib.parse.quote(original_filename)
+    
+    # Get MIME type based on extension
     mime_types = {
+        # Documents
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
         'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'ppt': 'application/vnd.ms-powerpoint',
         'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'xls': 'application/vnd.ms-excel',
         'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        
+        # Media
         'mp4': 'video/mp4',
         'mp3': 'audio/mpeg',
+        'wav': 'audio/wav',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        
+        # Code
         'py': 'text/x-python',
         'txt': 'text/plain',
         'c': 'text/x-c',
@@ -850,10 +906,35 @@ async def get_file(file_id: int, db: Session = Depends(get_db)):
         'jsx': 'text/jsx',
         'css': 'text/css',
         'rs': 'text/rust',
-        'cargo': 'text/plain',
-        'asm': 'text/x-asm'
-        #.gif
-    }.get(file_record.extension, 'application/octet-stream')
-
-    # Serve the file back to the client as a downloadable file
-    return FileResponse(file_record.path, media_type=mime_types, filename=file_record.filename)
+        'go': 'text/x-go',
+        'rb': 'text/x-ruby',
+        'php': 'text/x-php',
+        'sql': 'text/x-sql',
+        'xml': 'text/xml',
+        'json': 'application/json',
+        'yaml': 'text/yaml',
+        'md': 'text/markdown',
+        
+        # Archives
+        'zip': 'application/zip',
+        'rar': 'application/x-rar-compressed',
+        'tar': 'application/x-tar',
+        '7z': 'application/x-7z-compressed'
+    }
+    
+    # Get MIME type based on file extension
+    mime_type = mime_types.get(file_record.extension.lower(), 'application/octet-stream')
+    
+    headers = {
+        "Access-Control-Expose-Headers": "Content-Disposition",
+        "Content-Type": f"{mime_type}; charset=utf-8",
+        # Use RFC 5987 encoding for the filename
+        "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
+    }
+    
+    return FileResponse(
+        path=file_record.path,
+        filename=original_filename,
+        media_type=mime_type,
+        headers=headers
+    )

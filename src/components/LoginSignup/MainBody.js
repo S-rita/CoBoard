@@ -7,24 +7,16 @@ import { UserContext } from '../../UserContext';
 
 const MainBody = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [se, setSE] = useState([]);
   const [anonymous, setAnonymous] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { setUser, setStatus } = useContext(UserContext);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = "auto";
-      document.documentElement.style.overflow = "auto";
-    };
-  }, []);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -48,21 +40,6 @@ const MainBody = () => {
     loadUsers();
   }, []);
 
-  const clearInputs = () => {
-    setUsername("");
-    setPassword("");
-  };
-
-  const setSignup = () => {
-    setIsLogin(false);
-    clearInputs();
-  };
-
-  const setLogin = () => {
-    setIsLogin(true);
-    clearInputs();
-  };
-
   const validateUser = (username, password, users, type) => {
     if (!users || !Array.isArray(users)) {
       return null; // Return null if users array is not available or not an array
@@ -82,7 +59,7 @@ const MainBody = () => {
     return null;
   };
 
-  const validateSignUp = (username, password, users) => {
+  const validateSignUp = (username, password, email, users) => {
     if (!username || !password) {
       setError('Username and password cannot be empty.');
       return false;
@@ -96,7 +73,8 @@ const MainBody = () => {
 
     const userData = {
       aid: username,
-      apw: password
+      apw: password,
+      mail: email
     }
 
     createAnonymousUser(userData);
@@ -112,8 +90,8 @@ const MainBody = () => {
       loginStatus = validateUser(username, password, se, "se") || validateUser(username, password, anonymous, "anonymous");
     } else {
       // For signup, validate input and prevent duplicate usernames
-      if (validateSignUp(username, password, anonymous)) {
-        setUser({ aid: username, apw: password }); // This sets the new user in context
+      if (validateSignUp(username, password, email, anonymous) && validateEmail(email)) {
+        setUser({ aid: username, apw: password, mail: email }); // This sets the new user in context
         setStatus("a");
         clearInputs(); // Reset input fields after successful signup
         alert("Signup successful!");
@@ -128,6 +106,41 @@ const MainBody = () => {
     } else {
       setError("Invalid username or password.");
     }
+  }
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto";
+    };
+  }, []);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const clearInputs = () => {
+    setEmail("");
+    setUsername("");
+    setPassword("");
+  };
+
+  const setSignup = () => {
+    setIsLogin(false);
+    clearInputs();
+  };
+
+  const setLogin = () => {
+    setIsLogin(true);
+    clearInputs();
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   return (
@@ -194,14 +207,20 @@ const MainBody = () => {
                 setUsername={setUsername}
                 setPassword={setPassword}
                 submitForm={submitForm}
+                showPassword={showPassword}
+                toggleShowPassword={toggleShowPassword} // Pass the function down
               />
             ) : (
               <SignupPage
                 username={username}
+                email={email}
                 password={password}
                 setUsername={setUsername}
+                setEmail={setEmail}
                 setPassword={setPassword}
                 submitForm={submitForm}
+                showPassword={showPassword}
+                toggleShowPassword={toggleShowPassword} // Pass the function down
               />
             )}
           </div>

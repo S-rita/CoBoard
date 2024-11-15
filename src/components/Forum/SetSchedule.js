@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 
-const SetSchedule = ({ isVisible, closeSchedule }) => {
-    const [scheduleDate, setScheduleDate] = useState('');
+const SetSchedule = ({ isVisible, closeSchedule, publishDate, setPublish, expiredDate, setExpired }) => {
 
     const handleSetSchedule = () => {
-        if (scheduleDate) {
-            alert(`Schedule set for: ${scheduleDate}`);
-            closeSchedule();  // Close the modal after setting the schedule
+        if (publishDate || expiredDate) {
+            closeSchedule();
         } else {
             alert("Please select a date.");
         }
@@ -22,11 +20,22 @@ const SetSchedule = ({ isVisible, closeSchedule }) => {
                         <div className="flex justify-center m-4">
                             <input
                                 type="date"
-                                id="scheduleDate"
+                                id="publishDate"
                                 required
                                 className="border-2 border-black p-2 rounded-md w-96 h-12"
-                                value={scheduleDate}
-                                onChange={(e) => setScheduleDate(e.target.value)}  // Update the date state
+                                value={publishDate}
+                                onChange={(e) => setPublish(e.target.value)}  // Update the date state
+                            />
+                        </div>
+                        <h5 className="text-center text-sm m-2">Set expired date</h5>
+                        <div className="flex justify-center m-4">
+                            <input
+                                type="date"
+                                id="expiredDate"
+                                required
+                                className="border-2 border-black p-2 rounded-md w-96 h-12"
+                                value={expiredDate}
+                                onChange={(e) => setExpired(e.target.value)}  // Update the date state
                             />
                         </div>
                         <div className="flex justify-around">

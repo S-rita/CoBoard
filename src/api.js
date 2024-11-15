@@ -33,11 +33,9 @@ export const fetchTopics = async (board, forum_name) => {
 };
 
 // Create new Topic
-export const createTopic = async (board, forum_name, topicText) => {
+export const AddTopic = async (board, forum_name, topicData) => {
   try {
-      const response = await axios.post(`${API_BASE_URL}/coboard/${board}/${forum_name}/topic`, {
-          text: topicText,
-      });
+      const response = await axios.post(`${API_BASE_URL}/coboard/${board}/${forum_name}/topic`, topicData);
       return response.data;
   } catch (error) {
       console.error("Error creating topic:", error);
@@ -204,3 +202,66 @@ export const createAnonymousUser = async (userData) => {
     throw error;
   }
 };
+
+export const uploadFile = async (fileData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/file`, fileData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    console.log('File uploaded successfully:', response.data);
+  } catch (error) {
+      console.error('Error uploading file:', error);
+  }
+}
+
+export const downloadFile = async (fileId) => {
+  try {
+      const response = await axios.get(`http://localhost:8000/file/${fileId}`, {
+          responseType: 'blob'
+      });
+      
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'downloaded_file';
+      
+      // Try to get filename from Content-Disposition header
+      if (contentDisposition) {
+          // Check for RFC 5987 encoded filename
+          const filenameMatch = contentDisposition.match(/filename\*=UTF-8''(.+)/i);
+          if (filenameMatch) {
+              filename = decodeURIComponent(filenameMatch[1]);
+          } else {
+              // Fallback to regular filename
+              const regularMatch = contentDisposition.match(/filename="(.+)"/i);
+              if (regularMatch) {
+                  filename = decodeURIComponent(regularMatch[1]);
+              }
+          }
+      }
+      
+      // Create blob with proper type
+      const contentType = response.headers['content-type'] || 'application/octet-stream';
+      const blob = new Blob([response.data], { type: contentType });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+  } catch (error) {
+      console.error('Error downloading file:', error);
+      console.error('Response headers:', error.response?.headers);
+  }
+};
+

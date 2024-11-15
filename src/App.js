@@ -5,6 +5,8 @@ import Board from './Board';
 import Forum from './Forum';
 import Preview from '../src/components/Forum/Preview'
 import LoginSignup from './LoginSignup'
+import ForgetPassword from './ForgetPassword';
+import UserYourBoard from './UserYourboard';
 import Test from './Test'
 import Test2 from './Test2'
 import User from './User'
@@ -23,6 +25,8 @@ const App = () => {
         <Route path="/coboard/:board/:forum_name/topic" element={<Forum />} />
         <Route path="/coboard/:board/:forum_name/post" element={<Forum />} />
         <Route path="/preview/:board/:forum_name" element={<Preview />}/>
+        <Route path="/forget_password" element={<ForgetPassword />}/>
+        <Route path="/user" element={<UserYourBoard />}/>
         <Route path="/file" element={<Test />} />
         <Route path="/file/:fileid" element={<Test2 />}/>
         <Route path="/user/:sid" element={<User />} />

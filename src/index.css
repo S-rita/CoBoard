@@ -58,3 +58,20 @@ code {
   font-style: normal;
 }
 
+.post-card {
+  word-wrap: break-word;      /* Break long words onto the next line */
+  word-break: break-word;     /* Ensure long words break if necessary */
+  overflow-wrap: break-word;  /* Ensure text within the element will break onto a new line */
+}
+
+/* Optional: You can also limit the height of the card to ensure uniformity */
+.post-card h4, .post-card p {
+  white-space: normal;        /* Allow text to wrap instead of staying on one line */
+}
+
+/* To avoid overly large text in case of long words */
+.post-card p, .post-card h4 {
+  text-overflow: ellipsis;    /* Adds ellipsis (...) if text overflows */
+  overflow: hidden;           /* Prevent overflow of text */
+}
+

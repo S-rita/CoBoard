@@ -3,7 +3,7 @@ import HeadingSection from './HeadingSection';
 import AppearanceSection from './AppearanceSection';
 import AccessSection from './AccessSection';
 import TagSection from './TagSection';
-import { createForum, fetchForums } from '../../api';
+import { createForum, fetchForums, createAccess } from '../../api';
 import { UserContext } from '../../UserContext';
 
 const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => {
@@ -15,6 +15,7 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
   const [font, setFont] = useState(0);
   const [sortby, setSortBy] = useState(0);
   const [access, setAccess] = useState(0);
+  const [allowed, setAllowed] = useState([]);
   const [tags, setTags] = useState([]);
   const [btags, setBoardTags] = useState([]);
   const [error, setError] = useState(null);
@@ -88,7 +89,6 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
       wallpaper: wallpaper,
       font: font,
       sortby: sortby,
-      access: access, // Include access in the data
       creator_id: user.sid, // Replace with actual creator ID
       board: board, // Include the board
       tags: tags
@@ -98,6 +98,13 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
       console.log(forumData);
       const createdForum = await createForum(board, forumData); // Create forum
       console.log('Created forum:', createdForum);
+
+      if (access === 0) {
+        for (const user_id of allowed) {
+          await createAccess(board, createdForum.forum_name, user_id);
+        }
+      }
+
       onForumCreated(createdForum); // Pass the newly created forum
 
       // Clear the inputs after creating
@@ -182,7 +189,11 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
             />
           </div>
           <div ref={accessRef}>
-            <AccessSection handleAccess={setAccess} />
+          <AccessSection 
+              handleAccess={setAccess} 
+              allowed={allowed} 
+              setAllowed={setAllowed} 
+          />
           </div>
           <TagSection tags={tags} btags={btags} setTags={setTags} />
         </div>
