@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { fetchUsers } from "../../api";
+import { fetchUsers, sendMail } from "../../api";
 
 const ForgetPassword = () => {
   const [username, setUsername] = useState("");
@@ -59,9 +59,33 @@ const ForgetPassword = () => {
     const a_user = anonymous.find((user) => user.aid === username);
 
     if (se_user) {
-      setSuccessMessage(`Password sent to the email linked with ${username}.`);
+      try {
+        const mailData = {
+          receiver_email: `${se_user.sid}@kmitl.ac.th`,
+          pw: se_user.spw,
+        };
+  
+        // Wait for the email to be sent before setting the success message
+        await sendMail(mailData);
+        setSuccessMessage(`Password sent to the email linked with ${username}.`);
+      } catch (error) {
+        console.error("Failed to send recovery password", error);
+        setError("Failed to send recovery email.");
+      }
     } else if (a_user) {
-      setSuccessMessage(`Password sent to the email linked with ${username}.`);
+      try {
+        const mailData = {
+          receiver_email: a_user.mail,
+          pw: a_user.spw,
+        };
+  
+        // Wait for the email to be sent before setting the success message
+        await sendMail(mailData);
+        setSuccessMessage(`Password sent to the email linked with ${username}.`);
+      } catch (error) {
+        console.error("Failed to send recovery password", error);
+        setError("Failed to send recovery email.");
+      }
     } else {
       setError("Username not found.");
     }

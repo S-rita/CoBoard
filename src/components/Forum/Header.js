@@ -6,7 +6,7 @@ const Header = ({ board, forum_name, setSearchTopicTerm }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [icon, setIcon] = useState(null);
-    const [creator_id, setCreatorID] = useState('12345678');
+    const [creator_id, setCreatorID] = useState('');
     const [createdTime, setCreatedTime] = useState(null);
     const [elapsedTime, setElapsedTime] = useState('');
     const [wallpaper, setWallpaper] = useState('#006b62');

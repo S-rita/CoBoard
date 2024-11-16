@@ -1,29 +1,88 @@
 import React from 'react';
 
-const ShareSection = React.forwardRef((props, ref) => (
+const ShareSection = React.forwardRef((props, ref) => {
+  // Get the current URL
+  const currentUrl = window.location.href;
+
+  // Function to share the current URL via email
+  const shareViaEmail = () => {
+    const subject = 'Check out this page!';
+    const body = `I found this interesting page: ${currentUrl}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // Function to share the current URL on Facebook
+  const shareOnFacebook = () => {
+    const currentUrl = window.location.href;
+    const bodyText = "Check out this awesome page!"; // Your custom message
+    
+    // Construct the Facebook share URL with the current URL and the body text
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php`;
+    navigator.clipboard.writeText(currentUrl);
+    // Open the share dialog in a new window with proper dimensions
+    window.open(facebookUrl, 'width=600,height=400');
+  };
+  
+
+  // Function to share the current URL on Twitter
+  const shareOnTwitter = () => {
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=Check%20this%20out!`;
+    window.open(twitterUrl, 'width=600,height=400');
+  };
+
+  return (
     <div ref={ref} className="p-2">
       <h1 className="text-white font-bold text-xl">Share</h1>
       <div className="w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
-        <div className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white">
-            <img src="/asset/email_icon.svg" alt="Link" className=" flex flex-col w-12 h-12 mt-1 ml-2" />
-            <p className="text-blackorange text-3xl font-semibold ml-4">Email</p>
+        {/* Email Share */}
+        <div
+          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white cursor-pointer"
+          onClick={shareViaEmail}
+        >
+          <img
+            src="/asset/email_icon.svg"
+            alt="Share via Email"
+            className="flex flex-col w-12 h-12 ml-2"
+          />
+          <p className="text-blackorange text-2xl font-semibold ml-4">Email</p>
         </div>
+
         <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+          <div className="w-430 h-0.5 bg-darkorange"></div>
         </div>
-        <div className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white">
-            <img src="/asset/facebook_icon.svg" alt="Link" className=" flex flex-col w-12 h-12 mt-1 ml-2" />
-            <p className="text-blackorange text-3xl font-semibold ml-4">Facebook</p>
+
+        {/* Facebook Share */}
+        <div
+          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white cursor-pointer"
+          onClick={shareOnFacebook}
+        >
+          <img
+            src="/asset/facebook_icon.svg"
+            alt="Share on Facebook"
+            className="flex flex-col w-12 h-12 ml-2"
+          />
+          <p className="text-blackorange text-2xl font-semibold ml-4">Facebook</p>
         </div>
+
         <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+          <div className="w-430 h-0.5 bg-darkorange"></div>
         </div>
-        <div className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white">
-            <img src="/asset/twitter_icon.svg" alt="Link" className=" flex flex-col w-10 h-10 mt-1 ml-2" />
-            <p className="text-blackorange text-3xl font-semibold ml-4">Twitter</p>
+
+        {/* Twitter Share */}
+        <div
+          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white cursor-pointer"
+          onClick={shareOnTwitter}
+        >
+          <img
+            src="/asset/twitter_icon.svg"
+            alt="Share on Twitter"
+            className="flex flex-col w-10 h-10 ml-2"
+          />
+          <p className="text-blackorange text-2xl font-semibold ml-4">Twitter</p>
         </div>
       </div>
     </div>
-));
+  );
+});
 
 export default ShareSection;

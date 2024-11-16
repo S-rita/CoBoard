@@ -187,6 +187,7 @@ class SEUserBase(BaseModel):
     spw: str
     sprofile: Optional[str] = Field(None, description="Base64 encoded icon")
     sfile: Optional[str] = None
+    username: Optional[str]
 
 class SEUserCreate(SEUserBase):
     pass
@@ -225,6 +226,7 @@ class TopicPost(TopicPostBase):
 
 ###
 class ForumResponse(Forum):
+    creator: Optional[str]
     topics: List[Topic]
     tags: List[Tag]
     btags: List[Tag]
@@ -271,3 +273,17 @@ class SEUserResponse(SEUserBase):
     bookmarked: Optional[List[Forum]]
     created: Optional[List[Forum]]
     files: Optional[List[File]]
+
+class AnonymousUserResponse(AnonymousUserBase):
+    bookmarked: Optional[List[Forum]]
+    files: Optional[List[File]]
+
+class EmailRequest(BaseModel):
+    receiver_email: str
+    pw: str
+
+class UserUpdate(BaseModel):
+    studentId: str
+    username: str
+    password: str
+    profileImage: str

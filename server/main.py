@@ -16,6 +16,7 @@ from mimetypes import guess_type
 from datetime import date
 from pathlib import Path
 import urllib.parse
+import subprocess
 
 logging.basicConfig(level=logging.INFO)
 
@@ -207,6 +208,11 @@ async def get_topics(
         if db_forum.icon:
             response_data['icon'] = base64.b64encode(db_forum.icon).decode('utf-8')
 
+        user = db.query(models.SEUser).filter(models.SEUser.sid == db_forum.creator_id).first()
+
+        if user.username :
+            response_data['creator'] = user.username
+
         # Fetch associated tags
         tags = db.query(models.Tag).join(models.ForumTag).filter(
             models.ForumTag.forum_id == db_forum.forum_id
@@ -314,7 +320,6 @@ async def update_forum(
 
         # Update forum attributes, including the icon
         for key, value in forum.dict(exclude_unset=True).items():
-            print(f"Updating {key} with value: {value}")
             if key == 'icon' and value:
                 try:
                     # Decode the Base64 icon and validate its size
@@ -639,59 +644,172 @@ async def delete_bookmark(board: str, forum_name: str, status: str, user_id: str
     return {"message": "Bookmark deleted successfully"}
 
 # Route to get user info
-@app.get("/user/{sid}", response_model=schemas.SEUserResponse)
-async def get_user(sid: str, db: Session = Depends(get_db)):
+@app.get("/user/{id}", response_model=Union[schemas.SEUserResponse, schemas.AnonymousUserResponse])
+async def get_user(id: str, db: Session = Depends(get_db)):
     try:
-        db_user = db.query(models.SEUser).filter(
-            models.SEUser.sid == sid
+        se_user = db.query(models.SEUser).filter(
+            models.SEUser.sid == id
+        ).first()
+
+        a_user = db.query(models.AnonymousUser).filter(
+            models.AnonymousUser.aid == id
         ).first()
         
-        if not db_user:
+        if not se_user and not a_user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        response_data = db_user.__dict__.copy()
-        if db_user.sprofile:
-            response_data['sprofile'] = base64.b64encode(db_user.sprofile).decode('utf-8')
+        if se_user: 
+            response_data = se_user.__dict__.copy()
+            if se_user.sprofile:
+                response_data['sprofile'] = base64.b64encode(se_user.sprofile).decode('utf-8')
 
-        # Fetch bookmarked forums and encode any binary icons
-        bookmarked = (
-            db.query(models.Forum)
-            .join(models.SBookmark, models.Forum.forum_id == models.SBookmark.forum_id)
-            .filter(models.SBookmark.user_id == db_user.sid)
-            .all()
-        )
+            # Fetch bookmarked forums and encode any binary icons
+            bookmarked = (
+                db.query(models.Forum)
+                .join(models.SBookmark, models.Forum.forum_id == models.SBookmark.forum_id)
+                .filter(models.SBookmark.user_id == se_user.sid)
+                .all()
+            )
 
-        # Convert icons to Base64 if present
-        bookmarked_data = [
-            {
-                **bm.__dict__,
-                "icon": base64.b64encode(bm.icon).decode('utf-8') if bm.icon else None
-            }
-            for bm in bookmarked
-        ]
+            # Convert icons to Base64 if present
+            bookmarked_data = [
+                {
+                    **bm.__dict__,
+                    "icon": base64.b64encode(bm.icon).decode('utf-8') if bm.icon else None
+                }
+                for bm in bookmarked
+            ]
 
-        # Fetch created forums
-        created = db.query(models.Forum).filter(models.Forum.creator_id == db_user.sid).all()
-        created_data = [
-            {
-                **c.__dict__,
-                "icon": base64.b64encode(c.icon).decode('utf-8') if c.icon else None
-            }
-            for c in created
-        ]
+            # Fetch created forums
+            created = db.query(models.Forum).filter(models.Forum.creator_id == se_user.sid).all()
+            created_data = [
+                {
+                    **c.__dict__,
+                    "icon": base64.b64encode(c.icon).decode('utf-8') if c.icon else None
+                }
+                for c in created
+            ]
 
-        # Fetch files
-        files = db.query(models.File).filter(models.File.owner == db_user.sid).all()
-        files_data = [f.__dict__.copy() for f in files]
+            # Fetch files
+            files = db.query(models.File).filter(models.File.s_owner == se_user.sid).all()
+            files_data = [f.__dict__.copy() for f in files]
 
-        # Add all data to response
-        response_data['bookmarked'] = bookmarked_data
-        response_data['created'] = created_data
-        response_data['files'] = files_data
+            # Add all data to response
+            response_data['bookmarked'] = bookmarked_data
+            response_data['created'] = created_data
+            response_data['files'] = files_data
+            return schemas.SEUserResponse(**response_data)
+        
+        else :
+            response_data = a_user.__dict__.copy()
+            if a_user.aprofile:
+                response_data['aprofile'] = base64.b64encode(a_user.sprofile).decode('utf-8')
 
-        return schemas.SEUserResponse(**response_data)
+            # Fetch bookmarked forums and encode any binary icons
+            bookmarked = (
+                db.query(models.Forum)
+                .join(models.ABookmark, models.Forum.forum_id == models.ABookmark.forum_id)
+                .filter(models.ABookmark.user_id == a_user.aid)
+                .all()
+            )
+
+            # Convert icons to Base64 if present
+            bookmarked_data = [
+                {
+                    **bm.__dict__,
+                    "icon": base64.b64encode(bm.icon).decode('utf-8') if bm.icon else None
+                }
+                for bm in bookmarked
+            ]
+
+            # Fetch files
+            files = db.query(models.File).filter(models.File.a_owner == a_user.aid).all()
+            files_data = [f.__dict__.copy() for f in files]
+
+            # Add all data to response
+            response_data['bookmarked'] = bookmarked_data
+            response_data['files'] = files_data
+            return schemas.AnonymousUserResponse(**response_data)
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+# Route to update user info
+@app.put("/user/{id}", response_model=Union[schemas.SEUser, schemas.AnonymousUser])
+async def update_user(id: str, new: schemas.UserUpdate, db: Session = Depends(get_db)):
+    try:
+        # Fetch the existing forum from the database
+        se_user = db.query(models.SEUser).filter(
+            models.SEUser.sid == id
+        ).first()
+
+        a_user = db.query(models.AnonymousUser).filter(
+            models.AnonymousUser.aid == id
+        ).first()
+        
+        if not se_user and not a_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if se_user:
+            for key, value in new.dict(exclude_unset=True).items():
+                if key == 'profileImage' and value:
+                    try:
+                        # Decode the Base64 icon and validate its size
+                        decoded_profile = base64.b64decode(value)
+                        if len(decoded_profile) > 1048576:  # Limit to 1 MB
+                            raise HTTPException(status_code=400, detail="Icon file too large")
+                        se_user.sprofile = decoded_profile
+                    except base64.binascii.Error:
+                        raise HTTPException(status_code=400, detail="Invalid base64 for icon")
+                if key == 'username' and value:
+                    se_user.username = value
+                if key == 'password' and value:
+                    se_user.spw = value
+
+            db.commit()
+            db.refresh(se_user)
+
+            # Prepare response data
+            response_data = se_user.__dict__.copy()
+            if se_user.sprofile:
+                response_data['sprofile'] = base64.b64encode(se_user.sprofile).decode('utf-8')
+
+            return schemas.SEUser(**response_data)
+        
+        else :
+            for key, value in new.dict(exclude_unset=True).items():
+                print(f"Updating {key} with value: {value}")
+                if key == 'profile' and value:
+                    try:
+                        # Decode the Base64 icon and validate its size
+                        decoded_profile = base64.b64decode(value)
+                        if len(decoded_profile) > 1048576:  # Limit to 1 MB
+                            raise HTTPException(status_code=400, detail="Icon file too large")
+                        a_user.aprofile = decoded_profile
+                    except base64.binascii.Error:
+                        raise HTTPException(status_code=400, detail="Invalid base64 for icon")
+                if key == 'username' and value:
+                    a_user.aid = value
+                if key == 'password' and value:
+                    a_user.apw = value
+
+            db.commit()
+            db.refresh(a_user)
+
+            # Prepare response data
+            response_data = a_user.__dict__.copy()
+            if a_user.aprofile:
+                response_data['aprofile'] = base64.b64encode(a_user.aprofile).decode('utf-8')
+
+            return schemas.SEUser(**response_data)
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        error_msg = f"Database error while updating forum: {str(e)}"
+        raise HTTPException(status_code=500, detail=error_msg)
+    except Exception as e:
+        error_msg = f"Unexpected error while updating forum: {str(e)}"
+        raise HTTPException(status_code=500, detail=error_msg)
 
 # Route to delete access    
 @app.delete("/coboard/{board}/{forum_name}/setting")
@@ -746,7 +864,7 @@ async def create_access(
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 # Route to delete forum
-@app.delete("/user/{sid}")
+@app.delete("/user/{sid}/{forum_id}")
 async def delete_forum(
     sid: str,
     forum_id: int,
@@ -938,3 +1056,32 @@ async def get_file(file_id: int, db: Session = Depends(get_db)):
         media_type=mime_type,
         headers=headers
     )
+
+# Helper function to run the Python script
+def run_python_script(sender_email, sender_password, receiver_email, subject, message):
+    try:
+        # Define the command to run the Python script
+        sender_email = "kiddoquest.se@gmail.com"
+        sender_password = sender_password
+        receiver_email = receiver_email
+        subject = "Your Password Recovery"
+        message = message
+
+        command = f'python3 server/send_mail.py "{sender_email}" "{sender_password}" "{receiver_email}" "{subject}" "{message}"'
+        result = subprocess.run(command, shell=True)
+
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=500, detail="Failed to execute Python script: " + str(e))
+
+# API endpoint to send email
+@app.post("/sendmail")
+async def send_email(request: schemas.EmailRequest):
+    sender_email = "kiddoquest.se@gmail.com"
+    sender_password = "hrln ddln idjy hryv"  # Use a secure way to store credentials
+    subject = "Your Password Recovery"
+    message = f"Your current password: {request.pw}"
+
+    # Call the Python script to send the email
+    run_python_script(sender_email, sender_password, request.receiver_email, subject, message)
+
+    return {"message": "Email sent successfully!"}

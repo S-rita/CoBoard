@@ -90,7 +90,7 @@ const SharePanel = ({ isVisible, closeSharePanel }) => {
         <div className="p-6">
           <div ref={linkRef}><LinkSection /></div>
           <div ref={shareRef}><ShareSection /></div>
-          <div ref={exportRef}><ExportSection /></div>
+          <div ref={exportRef}><ExportSection ref={exportRef} /></div>
         </div>
       </div>
     </div>

@@ -183,9 +183,7 @@ export const createAccess = async (board, forum_name, userID) => {
 export const deleteForum = async (forum_id, sid) => {
   try {
     const response = await axios.delete(
-      `${API_BASE_URL}/user/${sid}`, null, {
-        params: { forum_id: forum_id }
-      });
+      `${API_BASE_URL}/user/${sid}/${forum_id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting forum:", error);
@@ -262,6 +260,36 @@ export const downloadFile = async (fileId) => {
   } catch (error) {
       console.error('Error downloading file:', error);
       console.error('Response headers:', error.response?.headers);
+  }
+};
+
+export const sendMail = async (mailData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/sendmail`, mailData);
+    return response.data;
+  } catch (error) {
+    console.error('Error sendmail:', error);
+    throw error;
+  }
+}
+
+export const fetchUserData = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetch user:', error);
+    throw error;
+  }
+}
+
+export const updateUser = async (id, userData) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/user/${id}`, userData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating forum:", error.response?.data || error.message);
+    throw error;
   }
 };
 

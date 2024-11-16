@@ -16,6 +16,7 @@ const Tab = ({ board, forum_name }) => {
   const [bookmark, setBookmark] = useState([]);
   const [isBookmarked, setIsBookmarked] = useState(false); 
   const id = status === "se" ? user.sid : user.aid;
+  const profile = status === "se" ? user.sprofile : user.aprofile;
 
   useEffect(() => {
     const loadTopics = async () => {
@@ -74,20 +75,21 @@ const Tab = ({ board, forum_name }) => {
 
   const openSettingPanel = () => {
     setSettingPanelVisible(true);
-    navigate(`/coboard/${board}/${forum_name}/setting`);
   };
 
   const closeSettingPanel = () => {
     setSettingPanelVisible(false);
-    navigate(`/coboard/${board}/${forum_name}`);
   };
 
   return (
     <>
       <div className="flex-shrink-0 w-20 min-h-screen bg-salmon items-center fixed right-0">
         <div className="flex flex-col w-20 min-h-screen bg-salmon items-center">
-          <button type="button" onClick={() => alert('User button clicked')} className="w-10 h-10 mt-12">
-            <img src="/asset/user_button.svg" alt="User Button" />
+          <button type="button" onClick={() => navigate(`/user/${id}/profile`)} className="w-10 h-10 mt-12 rounded-full">
+            <img 
+              src={`data:image/jpeg;base64,${profile}` || "/asset/user_button.svg"} 
+              alt="User Button"
+              className="w-full h-full object-cover rounded-full" />
           </button>
           <button type="button" onClick={openInfoPanel} className="w-12 h-12 mt-16">
             <img src="/asset/i_button.svg" alt="Info Button" />

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './components/Forum/Header';
 import Body from './components/Forum/Body';
 import Tab from './components/Forum/Tab';
 
-const Forum = () => {
+const Forum = React.forwardRef((props, ref) => {
   const { board, forum_name } = useParams();
   const [searchTopicTerm, setSearchTopicTerm] = useState('');
 
   return (
-    <div className="flex flex-row relative w-full h-screen overflow-hidden">
+    <div ref={ref} className="flex flex-row relative w-full h-screen overflow-hidden">
       <div className="flex flex-col w-full h-full">
         <Header 
           board={board} 
@@ -30,6 +30,6 @@ const Forum = () => {
       </div> 
     </div>
   );
-};
+});
 
 export default Forum;

@@ -6,6 +6,7 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
   const [icon, setIcon] = useState(null);
   const [access, setAccess] = useState(0);
   const [creator_id, setCreatorID] = useState('12345678');
+  const [creator, setCreator] = useState('');
   const [createdTime, setCreatedTime] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [topic, setTopic] = useState([]);
@@ -21,6 +22,7 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
         setTitle(response.forum_name);
         setIcon(response.icon);
         setCreatorID(response.creator_id);
+        setCreator(response.creator || '');
         setTopic(response.topics);
         setAccess(response.access.map(item => item.user_id));
 
@@ -92,7 +94,7 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
         <div className="w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Made by</p>
-            <p className="text-lg font-semibold text-black">{creator_id}</p>
+            <p className="text-lg font-semibold text-black">{creator || creator_id}</p>
           </div>
           <div className="my-4 flex justify-center">
             <div className="w-430 h-0.5 bg-darkorange"></div>

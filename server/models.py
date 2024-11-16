@@ -132,6 +132,7 @@ class SEUser(Base):
     spw = Column(String(255), nullable=False)
     sprofile = Column(LargeBinary)
     sfile = Column(String(255))
+    username = Column(String(255))
 
 # Tag model
 class Tag(Base):
