@@ -46,7 +46,6 @@ class AnonymousUserBase(BaseModel):
     aid: str
     apw: str
     aprofile: Optional[str] = Field(None, description="Base64 encoded icon")
-    mail: str
 
 class AnonymousUserCreate(AnonymousUserBase):
     pass
@@ -77,8 +76,7 @@ class FileBase(BaseModel):
     filename: str
     path: str
     extension : str
-    s_owner: Optional[str] = None
-    a_owner: Optional[str] = None
+    owner: str
     post_id: Optional[int]
 
 class FileCreate(FileBase):
@@ -103,6 +101,7 @@ class ForumBase(BaseModel):
     slug: Optional[str] = None  # Make slug optional
     board: str
     last_updated: Optional[date] = Field(default_factory=date.today)
+    expired: Optional[date] = Field(None, description="No expired")
 
 class ForumCreate(ForumBase):
     tags: Optional[List[Tag]] = []
@@ -145,8 +144,8 @@ class PostBase(BaseModel):
     spost_creator: Optional[str]
     apost_creator: Optional[str]
     pic: Optional[str] = Field(None, description="Base64 encoded icon")
+    publish: Optional[date] = Field(None, description="No expired")
     comments: List[Comment] = []
-    files: List[File] = []
 
 class PostCreate(PostBase):
     pass
@@ -198,12 +197,10 @@ class SEUser(SEUserBase):
 # Topic Pydantic models
 class TopicBase(BaseModel):
     text: str
-    publish: Optional[date] = Field(None, description="No schedule")
-    expired: Optional[date] = Field(None, description="No expired")
     posts: List[Post] = []
 
 class TopicCreate(TopicBase):
-    pass
+    text: str
 
 class Topic(TopicBase):
     topic_id: int
