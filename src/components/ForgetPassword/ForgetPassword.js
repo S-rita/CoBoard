@@ -76,7 +76,7 @@ const ForgetPassword = () => {
       try {
         const mailData = {
           receiver_email: a_user.mail,
-          pw: a_user.spw,
+          pw: a_user.apw,
         };
   
         // Wait for the email to be sent before setting the success message
