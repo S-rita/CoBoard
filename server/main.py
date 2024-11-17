@@ -857,3 +857,4 @@ async def get_file(file_id: int, db: Session = Depends(get_db)):
 
     # Serve the file back to the client as a downloadable file
     return FileResponse(file_record.path, media_type=mime_types, filename=file_record.filename)
+
