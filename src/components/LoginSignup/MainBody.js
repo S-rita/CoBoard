@@ -95,14 +95,14 @@ const MainBody = () => {
         setStatus("a");
         clearInputs(); // Reset input fields after successful signup
         alert("Signup successful!");
-        navigate(`/index`);
+        navigate(`/coboard`);
         return;
       }
     }
 
     if (loginStatus) {
       alert("Login successful!");
-      navigate(`/index`);
+      navigate(`/coboard`);
     } else {
       setError("Invalid username or password.");
     }

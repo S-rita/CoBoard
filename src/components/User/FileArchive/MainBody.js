@@ -64,7 +64,6 @@ const MainBody = () => {
 
   return (
     <div>
-      
         <FileArchive
           isDropdownVisible={isDropdownVisible}
           userData={userData}

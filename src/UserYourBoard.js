@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from './components/User/Header';
-import Body from './components/User/YourBoard/Body'; // Assuming MainBody is the component to be rendered in Body
-
+import Header from './components/User/YourBoard/Header';
+import Body from './components/User/YourBoard/Body';
 const UserYourBoard = () => {
   const [searchForumTerm, setSearchForumTerm] = useState('');
-  const { board } = useParams(); // Ensure this is properly set in your routing
+  const { board } = useParams();
 
   return (
     <div className="h-screen w-full overflow-y-hidden">
@@ -15,7 +14,7 @@ const UserYourBoard = () => {
       <div className="h-full">
         <Body 
           board={board}
-          searchForumTerm={searchForumTerm} 
+searchForumTerm={searchForumTerm} 
         />
       </div>
     </div>

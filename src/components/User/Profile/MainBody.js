@@ -5,7 +5,6 @@ import ProfileEdit from "./ProfileEdit";
 import ChangePassword from "./ChangePassword";
 import { UserContext } from '../../../UserContext';
 import { fetchUsers, updateUser } from "../../../api";
-import { Navigate } from "react-router-dom";
 
 const MainBody = () => {
   const { user, status, setUser, setStatus } = useContext(UserContext);
@@ -16,6 +15,8 @@ const MainBody = () => {
     password: status === "se" ? user.spw : user.apw,
     profileImage: status === "se" ? user.sprofile : user.aprofile,
   });
+
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [anonymous, setAnonymous] = useState([]);
@@ -48,8 +49,13 @@ const MainBody = () => {
     loadUsers();
   }, []);
 
+  
   const handleChangePassword = () => {
     setIsChangingPassword(true);
+  };
+
+  const handleCancelChangePassword = () => {
+    setIsChangingPassword(false);
   };
 
   const handlePasswordUpdate = async () => {
@@ -84,11 +90,14 @@ const MainBody = () => {
         alert('Error updating user. Please try again.');
     }
   };
-  
 
   const handleEditProfile = () => {
     setIsEditing(true);
     setEditedUsername(userData.username);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false); // Cancel editing and return to view mode
   };
 
   const handleImageUpload = async (event) => {
@@ -101,7 +110,7 @@ const MainBody = () => {
           ...prevData,
           profileImage: base64Image,
         }));
-        setImage(reader.result); // Set preview image
+        setImage(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -149,13 +158,15 @@ const MainBody = () => {
           confirmPassword={confirmPassword}
           setConfirmPassword={setConfirmPassword}
           handlePasswordUpdate={handlePasswordUpdate}
+          handleCancelChangePassword={handleCancelChangePassword} 
           error={error}
         />
       ) : isEditing ? (
         <ProfileEdit
           editedUsername={editedUsername}
           setEditedUsername={setEditedUsername}
-          handleUpdateUsername={handleUpdateUsername} // Call the updated function
+          handleUpdateUsername={handleUpdateUsername}
+          handleCancelEdit={handleCancelEdit} 
           error={error}
           image={image}
           setImage={setImage}

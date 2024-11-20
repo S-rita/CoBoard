@@ -33,14 +33,25 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
   const scrollToSection = (sectionRef) => {
     const headerHeight = 176;
     const panelElement = document.getElementById('createforum');
-    const sectionPosition = sectionRef.current.offsetTop;
-    const offsetPosition = sectionPosition - headerHeight;
-
-    panelElement.querySelector('.overflow-y-scroll').scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth',
-    });
+    const scrollContainer = panelElement.querySelector('.overflow-y-scroll');
+  
+    if (sectionRef && sectionRef.current) {
+      const sectionPosition = sectionRef.current.offsetTop;
+      const offsetPosition = sectionPosition - headerHeight;
+  
+      scrollContainer.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    } else {
+      // Scroll to the bottom if the section reference is not available
+      scrollContainer.scrollTo({
+        top: scrollContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
+  
 
   const setUnderlinePosition = (index) => {
     const button = buttonsRef.current[index];
@@ -131,13 +142,13 @@ const CreateForum = ({ isVisible, closeCreateForum, board, onForumCreated }) => 
   if (!isVisible) return null;
 
   return (
-    <div ref={panelRef} id="createforum" className="fixed inset-0 z-20 flex items-end justify-center bg-black bg-opacity-50">
-      <div className="bg-white w-panel h-630 rounded-2xl shadow-lg relative overflow-y-scroll overflow-x-hidden">
+    <div ref={panelRef} id="createforum" className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+      <div className="bg-white w-panel h-630 rounded-2xl shadow-lg relative overflow-y-scroll overflow-x-hidden rounded-b-none scrollbar-hide">
         <div className="w-full h-44 shadow-lg p-7 rounded-t-2xl sticky top-0 bg-white z-10">
-          <button onClick={closeCreateForum} className="absolute top-0 left-0 w-12 h-12 m-7 bg-graybg rounded-xl text-3xl text-white font-extrabold">
+          <button onClick={closeCreateForum} className="absolute top-0 left-0 w-12 h-12 m-7 bg-gray-400 hover:bg-gray-300 rounded-xl text-3xl text-white font-extrabold">
             &times;
           </button>
-          <h1 className="text-4xl text-center mt-2 text-black font-bold">Create Forum</h1>
+          <h1 className="text-4xl text-center mt-2 text-black font-bold ">Create Forum</h1>
           <div className="relative my-7 flex justify-center">
             <div ref={underlineRef} id="underline" className="absolute bottom-0 h-1 bg-basegreen transition-all duration-300"></div>
             {['heading', 'appearance', 'access', 'tags'].map((section, index) => (

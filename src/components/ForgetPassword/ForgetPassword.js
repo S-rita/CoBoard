@@ -96,7 +96,7 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden">
+    <div>
       <div className="absolute top-[-140px] right-[-180px]">
         <img
           src="/asset/CoBoard logo.svg"
@@ -111,6 +111,7 @@ const ForgetPassword = () => {
           alt="Logo"
         />
       </div>
+      <div className="overflow-hidden m-0 bg-[#006b62] h-screen relative">
       <div id="usernameInput" className="flex flex-col items-center mt-[130px]">
         <div className="w-[440px] h-[400px] bg-white rounded-[20px] shadow-lg flex flex-col justify-center items-center mb-[150px] relative">
           <div className="absolute top-[-110px]">
@@ -155,6 +156,8 @@ const ForgetPassword = () => {
         </div>
       </div>
     </div>
+    </div>
+
   );
 };
 

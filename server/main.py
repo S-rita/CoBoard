@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException, Body, Form, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import desc, and_
-from slugify import slugify
+from sqlalchemy import desc
 from typing import Union
 from .database import SessionLocal, engine
 from . import models, schemas
@@ -12,9 +11,7 @@ import logging
 import base64
 import shutil
 import os
-from mimetypes import guess_type
 from datetime import date
-from pathlib import Path
 import urllib.parse
 import subprocess
 
@@ -37,6 +34,8 @@ logger = logging.getLogger(__name__)
 
 UPLOAD_DIR = "uploads/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+TARGET_URL = "https://www.se.kmitl.ac.th/"
 
 def get_db():
     db = SessionLocal()
@@ -362,6 +361,11 @@ async def update_forum(
         response_data = db_forum.__dict__.copy()
         if db_forum.icon:
             response_data['icon'] = base64.b64encode(db_forum.icon).decode('utf-8')
+
+        user = db.query(models.SEUser).filter(models.SEUser.sid == db_forum.creator_id).first()
+
+        if user.username :
+            response_data['creator'] = user.username
 
         # Fetch updated tags
         tags = db.query(models.Tag).join(models.ForumTag).filter(
@@ -779,7 +783,7 @@ async def update_user(id: str, new: schemas.UserUpdate, db: Session = Depends(ge
         else :
             for key, value in new.dict(exclude_unset=True).items():
                 print(f"Updating {key} with value: {value}")
-                if key == 'profile' and value:
+                if key == 'profileImage' and value:
                     try:
                         # Decode the Base64 icon and validate its size
                         decoded_profile = base64.b64decode(value)

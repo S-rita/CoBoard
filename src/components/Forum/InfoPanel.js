@@ -73,31 +73,31 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
 
   return (
     <div id="infopanel" className="fixed inset-0 z-20 flex items-end justify-end bg-black bg-opacity-50">
-      <div className="bg-darkorange w-panel h-screen p-7 rounded-2xl rounded-r-none shadow-lg relative overflow-y-scroll overflow-x-hidden">
+      <div className="bg-darkorange w-[500px] md:w-panel h-screen p-7 rounded-2xl rounded-r-none shadow-lg relative overflow-y-scroll overflow-x-hidden scrollbar-hide">
         <button
           onClick={closeInfoPanel}
-          className="absolute top-0 left-0 w-12 h-12 ml-7 mt-12 text-4xl text-white font-extrabold"
+          className="absolute top-0 left-0 w-14 h-14 ml-7 mt-12 text-4xl text-white font-extrabold"
         >
           &times;
         </button>
         <h1 className="text-4xl text-center mt-7 text-white font-bold">About this forum</h1>
-        <div className="w-500 h-80 bg-white mt-12 rounded-2xl flex justify-center items-center">
+        <div className="w-450 md:w-500 h-80 bg-white mt-12 rounded-2xl flex justify-center items-center">
           {icon && (
             <img 
               src={`data:image/jpeg;base64,${icon}`}
               alt={`${title} icon`} 
-              className="w-full h-full object-cover rounded-2xl"
+              className="w-450 h-80 md:w-full md:h-full object-cover rounded-2xl"
             />
           )}
         </div>
         <h1 className="text-white font-bold text-3xl mt-5 ml-3">{title}</h1>
-        <div className="w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
-          <div className="flex flex-row justify-between w-full">
+        <div className="w-450 md:w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
+          <div className="flex flex-row justify-between w-full mt-1">
             <p className="text-lg font-semibold text-gray1">Made by</p>
             <p className="text-lg font-semibold text-black">{creator || creator_id}</p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Made on</p>
@@ -110,7 +110,7 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
             </p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Last update on</p>
@@ -123,43 +123,43 @@ const InfoPanel = ({ isVisible, closeInfoPanel, board, forum_name }) => {
             </p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
-          <div className="flex flex-row justify-between w-full">
+          <div className="flex flex-row justify-between w-full mb-1">
             <p className="text-lg font-semibold text-gray1">Access</p>
             <p className="text-lg font-semibold text-black">{access.length !== 0 ? 'Private' : 'Public'}</p>
           </div>
         </div>
-        <div className="w-500 h-fit bg-lightorange mt-6 rounded-2xl py-4 px-10 flex flex-col items-center">
-          <div className="flex flex-row justify-between w-full">
+        <div className="w-450 md:w-500 h-fit bg-lightorange mt-6 rounded-2xl py-4 px-10 flex flex-col items-center">
+          <div className="flex flex-row justify-between w-full mt-1">
             <p className="text-lg font-semibold text-gray1">Contributors</p>
-            <p className="text-lg font-semibold text-black">{totalContributors}</p>
+            <p className="text-lg font-semibold text-black ">{totalContributors}</p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Topics</p>
             <p className="text-lg font-semibold text-black">{topic.length}</p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Posts</p>
             <p className="text-lg font-semibold text-black">{totalPosts}</p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
           <div className="flex flex-row justify-between w-full">
             <p className="text-lg font-semibold text-gray1">Comments</p>
             <p className="text-lg font-semibold text-black">{totalComments}</p>
           </div>
           <div className="my-4 flex justify-center">
-            <div className="w-430 h-0.5 bg-darkorange"></div>
+            <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
           </div>
-          <div className="flex flex-row justify-between w-full">
+          <div className="flex flex-row justify-between w-full mb-1">
             <p className="text-lg font-semibold text-gray1">Reactions</p>
             <p className="text-lg font-semibold text-black">{totalReactions}</p>
           </div>

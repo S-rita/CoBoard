@@ -58,9 +58,9 @@ const SharePanel = ({ isVisible, closeSharePanel }) => {
 
   return (
     <div ref={panelRef} id="sharepanel" className="fixed inset-0 z-20 flex items-end justify-end bg-black bg-opacity-50">
-      <div className="bg-darkorange w-panel h-screen rounded-2xl rounded-r-none shadow-lg relative overflow-y-scroll overflow-x-hidden">
+      <div className="bg-darkorange w-[500px] md:w-panel h-screen rounded-2xl rounded-r-none shadow-lg relative overflow-y-scroll overflow-x-hidden scrollbar-hide">
         <div className="w-full h-44 shadow-lg p-7 rounded-bl-2xl sticky top-0 bg-darkorange z-10">
-          <button onClick={closeSharePanel} className="absolute top-0 left-0 w-12 h-12 m-7 text-4xl text-white font-extrabold">
+          <button onClick={closeSharePanel} className="absolute top-0 left-0 w-14 h-14 m-7 text-4xl text-white font-extrabold">
             &times;
           </button>
           <h1 className="text-4xl text-center mt-2 text-white font-bold">Share</h1>
@@ -71,7 +71,6 @@ const SharePanel = ({ isVisible, closeSharePanel }) => {
                 key={section}
                 ref={el => (buttonsRef.current[index] = el)}
                 onClick={() => {
-                  // Map section names directly to refs
                   const sectionRefs = { link: linkRef, share: shareRef, export: exportRef };
                   scrollToSection(sectionRefs[section]);
                   setActiveSection(section);

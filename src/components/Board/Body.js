@@ -7,7 +7,8 @@ const Body = ({ board, searchForumTerm }) => {
 
   return (
     <div className="w-full h-full flex flex-row">
-      <div className="w-1/4 h-screen sticky top-0">
+      
+      <div className="h-screen sticky top-0">
         <LeftTab board={board} setTagFiltered={setTagFiltered} />
       </div>
       <div className="flex-grow overflow-y-auto mb-40">

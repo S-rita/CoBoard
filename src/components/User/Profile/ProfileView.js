@@ -1,20 +1,27 @@
-import React from 'react';
+import React from "react";
 
-const ProfileView = ({ userData, handleChangePassword, handleEditProfile, image, isPasswordVisible }) => {
+const ProfileView = ({
+  userData,
+  handleChangePassword,
+  handleEditProfile,
+  image,
+  isPasswordVisible,
+}) => {
   // Generate asterisks based on password length
   const generateAsterisks = (password) => {
-    return password ? '*'.repeat(password.length) : '';
+    return password ? "*".repeat(password.length) : "";
   };
 
   return (
     <div className="mt-6">
-      <div className="flex-row flex items-center mb-4 ml-10">
-        <div className={`bg-gray-300 rounded-full h-[234px] w-[234px] overflow-hidden relative`}>
+      <div className="flex flex-col-reverse md:flex-row items-center mb-4 md:ml-10">
+        {/* Profile image */}
+        <div className="bg-gray-300 rounded-full h-[150px] w-[150px] md:h-[234px] md:w-[234px] overflow-hidden relative">
           {image ? (
             <img
-              src={image}
-              alt="Profile"
-              className="h-full w-full object-cover"
+            src={`data:image/jpeg;base64,${image}`}
+            alt="Profile"
+              className="h-full w-full object-cover rounded-full"
             />
           ) : (
             <span className="flex items-center justify-center h-full text-gray-500">
@@ -22,44 +29,48 @@ const ProfileView = ({ userData, handleChangePassword, handleEditProfile, image,
             </span>
           )}
         </div>
-        
-        <div className="flex flex-row items-center">
-          <div className="w-[700px] h-[3px] bg-gray-400 mb-[100px]"></div>
-          <p className="text-gray-700 text-4xl ml-4 mb-[100px]">
+
+        {/* Username text */}
+        <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
+          <div className="hidden md:block w-full md:w-[700px] h-[3px] bg-gray-400 mb-4 md:mb-[100px]"></div>
+          <p className="text-gray-700 text-2xl md:text-4xl ml-0 md:ml-4 mb-10 md:mb-[100px]">
             {userData.username ? userData.username : userData.studentId}
           </p>
         </div>
       </div>
-      
+
       {/* User Information */}
-      <div className="w-[900px] mt-[-150px] ml-[300px] bg-gray-200 rounded-lg shadow-md p-6">
-        <p className="text-gray-700 mb-5 text-2xl">
-          Student ID:<span className="ml-6">{userData.studentId}</span>
+      <div className="w-[300px] md:w-[900px] mt-[0px] md:mt-[-150px] mx-auto md:ml-[300px] bg-gray-200 rounded-lg shadow-md p-6">
+        <p className="text-gray-700 mb-5 text-xl md:text-2xl">
+          Student ID:<span className="ml-2 md:ml-7">{userData.studentId}</span>
         </p>
-        <p className="text-gray-700 mb-5 text-2xl">
+        <p className="text-gray-700 mb-5 text-xl md:text-2xl">
           Username:
-          <span className="ml-7">
+          <span className="ml-4 md:ml-9">
             {userData.username ? userData.username : "-"}
           </span>
         </p>
-        <p className="text-gray-700 text-2xl">
+        <p className="text-gray-700 text-xl md:text-2xl">
           Password:
-          <span className="ml-8">
-            {isPasswordVisible ? userData.password : generateAsterisks(userData.password)}
+          <span className="ml-5 md:ml-10">
+            {isPasswordVisible
+              ? userData.password
+              : generateAsterisks(userData.password)}
           </span>
         </p>
       </div>
 
-      <div className="mt-4 ml-[900px] flex gap-4">
+      {/* Buttons */}
+      <div className="mt-4 flex justify-center md:justify-start md:ml-[900px] gap-4">
         <button
           onClick={handleEditProfile}
-          className="bg-gray-300 text-gray-700 py-2 px-4 rounded-xl hover:bg-gray-400"
+          className="bg-lightergreen text-basegreen py-2 px-4 rounded-xl hover:bg-lightergreenhover"
         >
           Edit Profile
         </button>
         <button
           onClick={handleChangePassword}
-          className="bg-gray-300 text-gray-700 py-2 px-4 rounded-xl hover:bg-gray-400"
+          className="bg-lightergreen text-basegreen py-2 px-4 rounded-xl hover:bg-lightergreenhover"
         >
           Change Password
         </button>

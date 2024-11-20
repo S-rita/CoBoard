@@ -48,11 +48,14 @@ const Tab = ({ board, forum_name }) => {
       if (isBookmarked) {
         // If already bookmarked, remove the bookmark
         await deleteBookmark(board, forum_name, id, status);
+        alert("Bookmark removed.");
         setIsBookmarked(false);
+        
       } else {
         // If not bookmarked, add a new bookmark
         const createdBookmark = await addBookmark(board, forum_name, id, status);
         setIsBookmarked(true);
+        alert("Bookmark added.");
         console.log('Created bookmark:', createdBookmark);
       }
     } catch (error) {
@@ -83,34 +86,91 @@ const Tab = ({ board, forum_name }) => {
 
   return (
     <>
-      <div className="flex-shrink-0 w-20 min-h-screen bg-salmon items-center fixed right-0">
-        <div className="flex flex-col w-20 min-h-screen bg-salmon items-center">
-          <button type="button" onClick={() => navigate(`/user/${id}/profile`)} className="w-10 h-10 mt-12 rounded-full">
-            <img 
-              src={`data:image/jpeg;base64,${profile}` || "/asset/user_button.svg"} 
-              alt="User Button"
-              className="w-full h-full object-cover rounded-full" />
-          </button>
-          <button type="button" onClick={openInfoPanel} className="w-12 h-12 mt-16">
-            <img src="/asset/i_button.svg" alt="Info Button" />
-          </button>
-          <button type="button" onClick={handleBookmarkToggle} className="w-12 h-12 mt-10">
-            <img 
-              src={isBookmarked ? "/asset/bookmarked_button.svg" : "/asset/bookmark_button.svg"} 
-              alt="Bookmark Button" 
-            />
-          </button>
-          <button type="button" onClick={openSharePanel} className="w-12 h-12 mt-10">
-            <img src="/asset/share_button.svg" alt="Share Button" />
-          </button>
-          {creator_id === id && (
-            <button type="button" onClick={openSettingPanel} className="w-12 h-12 mt-10">
-              <img src="/asset/setting_button.svg" alt="Setting Button" />
-            </button>
-          )}
-        </div>
-      </div>
-
+<div className="flex-shrink-0 w-20 min-h-screen bg-salmon items-center fixed right-0">
+  <div className="flex flex-col w-20 min-h-screen bg-salmon items-center">
+    <button
+      type="button"
+      onClick={() => navigate(`/user/${id}/profile`)}
+      className="w-10 h-10 mt-12 rounded-full group"
+    >
+      <img
+        src={`data:image/jpeg;base64,${profile}` || "/asset/user_button.svg"}
+        alt="User Button"
+        className="w-full h-full object-cover rounded-full"
+      />
+    </button>
+    <button
+      type="button"
+      onClick={openInfoPanel}
+      className="w-12 h-12 mt-16 group"
+    >
+      <img
+        src="/asset/i_button.svg"
+        alt="Info Button"
+        className="group-hover:hidden"
+      />
+      <img
+        src="/asset/i_button_hover.svg"
+        alt="Info Button Hover"
+        className="hidden group-hover:block"
+      />
+    </button>
+    <button
+      type="button"
+      onClick={handleBookmarkToggle}
+      className="w-12 h-12 mt-10 group"
+    >
+      <img
+        src={isBookmarked ? "/asset/bookmarked_button.svg" : "/asset/bookmark_button.svg"}
+        alt="Bookmark Button"
+        className="group-hover:hidden"
+      />
+      <img
+        src={
+          isBookmarked
+            ? "/asset/bookmark_button_hover.svg"
+            : "/asset/bookmark_button_hover.svg"
+        }
+        alt="Bookmark Button Hover"
+        className="hidden group-hover:block"
+      />
+    </button>
+    <button
+      type="button"
+      onClick={openSharePanel}
+      className="w-12 h-12 mt-10 group"
+    >
+      <img
+        src="/asset/share_button.svg"
+        alt="Share Button"
+        className="group-hover:hidden"
+      />
+      <img
+        src="/asset/share_button_hover.svg"
+        alt="Share Button Hover"
+        className="hidden group-hover:block"
+      />
+    </button>
+    {creator_id === id && (
+      <button
+        type="button"
+        onClick={openSettingPanel}
+        className="w-12 h-12 mt-10 group"
+      >
+        <img
+          src="/asset/setting_button.svg"
+          alt="Setting Button"
+          className="group-hover:hidden"
+        />
+        <img
+          src="/asset/setting_button_hover.svg"
+          alt="Setting Button Hover"
+          className="hidden group-hover:block"
+        />
+      </button>
+    )}
+  </div>
+</div>
       <InfoPanel 
         isVisible={isInfoPanelVisible} 
         closeInfoPanel={closeInfoPanel}

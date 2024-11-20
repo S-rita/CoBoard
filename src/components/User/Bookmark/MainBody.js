@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import BookmarkView from "./BookmarkView";
 import BookmarkEdit from "./BookmarkEdit";
 import { UserContext } from '../../../UserContext';
 import { fetchUserData } from "../../../api";
 
-const MainBody = () => {
+const MainBody = ({ board, searchForumTerm = "" }) => {  
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +14,6 @@ const MainBody = () => {
   const [forums, setForums] = useState([]);
   const [bookmarkedForums, setBookmarkedForums] = useState([]);
   const [filteredBookmarkedForums, setFilteredBookmarkedForums] = useState([]);
-  const [searchForumTerm, setSearchForumTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const { user, status } = useContext(UserContext);
@@ -83,7 +81,6 @@ const MainBody = () => {
           setForums={setForums}
           filteredForums={filteredBookmarkedForums}
           setFilteredForums={setFilteredBookmarkedForums}
-          searchForumTerm={searchForumTerm}
           toggleDropdown={toggleDropdown}
           handleSortSelection={handleSortSelection}
           navigate={navigate}
@@ -98,7 +95,6 @@ const MainBody = () => {
           sortBy={sortBy}
           forums={bookmarkedForums}
           filteredForums={filteredBookmarkedForums}
-          searchForumTerm={searchForumTerm}
           toggleDropdown={toggleDropdown}
           handleSortSelection={handleSortSelection}
           navigate={navigate}

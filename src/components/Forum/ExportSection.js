@@ -52,32 +52,32 @@ const ExportSection = React.forwardRef((props, ref) => {
 
   return (
     <div className="p-2">
-      <h1 className="text-white font-bold text-xl">Export</h1>
-      <div className="w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
+      <h1 className="text-white font-bold text-2xl pl-5 -mb-3">Export</h1>
+      <div className="w-480 md:w-500 h-fit bg-lightorange mt-4 rounded-2xl py-2 px-10 flex flex-col items-center">
         <div
-          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white cursor-pointer"
+          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white md:hover:scale-105 transform transition-transform duration-200 cursor-pointer"
           onClick={exportAsImage}
         >
           <img
             src="/asset/picture_icon.svg"
             alt="Export as Image"
-            className="flex flex-col w-12 h-12 ml-2"
+            className="flex flex-col w-8 h-8 ml-8 md:ml-2"
           />
           <p className="text-blackorange text-2xl font-semibold ml-4">
             Export as Image
           </p>
         </div>
-        <div className="my-4 flex justify-center">
-          <div className="w-430 h-0.5 bg-darkorange"></div>
+        <div className="my-1 flex justify-center">
+          <div className="w-400 md:w-430 h-0.5 bg-darkorange"></div>
         </div>
         <div
-          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white cursor-pointer"
+          className="flex w-430 h-20 m-1 rounded-2xl items-center hover:bg-white md:hover:scale-105 transform transition-transform duration-200 cursor-pointer"
           onClick={exportAsPDF}
         >
           <img
             src="/asset/pdf_icon.svg"
             alt="Export as PDF"
-            className="flex flex-col w-12 h-12 ml-2"
+            className="flex flex-col w-9 h-9 ml-8 md:ml-2"
           />
           <p className="text-blackorange text-2xl font-semibold ml-4">
             Export as PDF

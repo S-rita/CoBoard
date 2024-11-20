@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import YourBoardView from "./YourBoardView";
 import YourBoardEdit from "./YourBoardEdit";
-import { UserContext } from "../../../UserContext"
+import { UserContext } from "../../../UserContext";
 import { fetchUserData } from "../../../api";
 
-const MainBody = () => {
+const MainBody = ({ board, searchForumTerm = "" }) => {  
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,6 @@ const MainBody = () => {
   const [sortBy, setSortBy] = useState(null);
   const [forums, setForums] = useState([]);
   const [filteredForums, setFilteredForums] = useState([]);
-  const [searchForumTerm, setSearchForumTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const { user, status } = useContext(UserContext);
@@ -27,7 +26,6 @@ const MainBody = () => {
         const response = await fetchUserData(id);
         setUserData(response);
         setForums(response.created || []);
-        setFilteredForums(response.created || []);
       } catch (err) {
         setError(err.response ? err.response.data.detail : "An error occurred");
       } finally {
@@ -80,7 +78,6 @@ const MainBody = () => {
           setForums={setForums}
           filteredForums={filteredForums}
           setFilteredForums={setFilteredForums}
-          searchForumTerm={searchForumTerm}
           toggleDropdown={toggleDropdown}
           handleSortSelection={handleSortSelection}
           navigate={navigate}
@@ -95,7 +92,6 @@ const MainBody = () => {
           sortBy={sortBy}
           forums={forums}
           filteredForums={filteredForums}
-          searchForumTerm={searchForumTerm}
           toggleDropdown={toggleDropdown}
           handleSortSelection={handleSortSelection}
           navigate={navigate}

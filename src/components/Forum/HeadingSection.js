@@ -24,29 +24,29 @@ const HeadingSection = React.forwardRef(({ setTitle, setDescription, setIcon, ti
 
   return (
     <div ref={ref} className="p-2">
-      <h1 className="text-white font-bold text-xl">Heading</h1>
-      <div className="w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
+      <h1 className="text-white font-bold  text-2xl pl-5 -mb-3">Heading</h1>
+      <div className="w-490 md:w-500 h-fit bg-lightorange mt-4 rounded-2xl py-4 px-10 flex flex-col items-center">
         <h2 className="text-xl self-start m-1 font-bold text-blackorange">Title</h2>
         <input
-          className="bg-white w-430 h-10 m-1 rounded-2xl px-2"
+          className="bg-white w-380 md:w-430 h-10 m-1 rounded-2xl px-3 cursor-pointer"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={title}
         />
         <div className="my-4 flex justify-center">
-          <div className="w-430 h-0.5 bg-darkorange"></div>
+          <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
         </div>
         <h2 className="text-xl self-start m-1 font-bold text-blackorange">Description</h2>
         <input
-          className="bg-white w-430 h-10 m-1 rounded-2xl px-2"
+          className="bg-white w-380 md:w-430 h-10 m-1 rounded-2xl px-2 cursor-pointer"
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={description}
         />
         <div className="my-4 flex justify-center">
-          <div className="w-430 h-0.5 bg-darkorange"></div>
+          <div className="w-380 md:w-430 h-0.5 bg-darkorange"></div>
         </div>
 
         {/* Icon Upload Section */}
@@ -58,7 +58,7 @@ const HeadingSection = React.forwardRef(({ setTitle, setDescription, setIcon, ti
                 {preview ? (
                   <img src={preview} alt="Icon Preview" className="w-full h-full rounded-full object-cover" />
                 ) : (
-                  <span className="text-sm text-white">Upload</span>
+                  <span className="text-sm text-gray-500">Upload</span>
                 )}
               </div>
             </label>

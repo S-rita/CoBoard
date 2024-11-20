@@ -36,7 +36,7 @@ const Login = ({ username, password, setUsername, setPassword, submitForm, showP
       {/* Use Link for navigation */}
       <Link
         to="/forget_password"
-        className="mt-[-5px] mr-[10px] text-[11px] font-['Istok Web'] text-[#0a66c2] cursor-pointer relative font-light ml-[210px] after:absolute after:left-0 after:bottom-0 after:h-[1px] after:w-full after:bg-[#0a66c2] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+        className="mt-[-5px] mr-[10px] text-[11px] text-[#0a66c2] cursor-pointer relative font-light ml-[210px] after:absolute after:left-0 after:bottom-0 after:h-[1px] after:w-full after:bg-[#0a66c2] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
       >
         Forgot Password?
       </Link>

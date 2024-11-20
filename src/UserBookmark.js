@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from './components/User/Header';
+import Header from './components/User/Bookmark/Header';
 import Body from './components/User/Bookmark/Body';
 
 const UserYourBoard = () => {
