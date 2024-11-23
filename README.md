@@ -77,7 +77,11 @@ CoBoard is a forum platform designed for Software Engineering students at King M
     ```
 3. Download <a href="https://nodejs.org/en">Node.js</a> and <a href="https://www.postgresql.org/download/">PostgreSQL</a> on your computer.
 4. Create tables for the database:
-5. Open the server.py file located in the directory named directory. Replace the DATABASE_URL with your PostgreSQL credentials:
+   - Download the file from the repository: [`schemas.sql`](https://github.com/S-rita/CoBoard/blob/main/schemas.sql)
+   - Run the script using the following command in your terminal (ensure you are connected to your PostgreSQL instance):
+       psql -U <username> -d coboard -f path/to/schemas.sql
+     Replace <username> with your PostgreSQL username and ensure the file path points to the location of schemas.sql.
+6. Open the server.py file located in the directory named directory. Replace the DATABASE_URL with your PostgreSQL credentials:
 
     ```sh
     DATABASE_URL = "postgresql://<username>:<password>@<hostname>/<database_name>"
