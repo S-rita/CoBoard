@@ -28,9 +28,8 @@
     <li><a href="#features">Web Frameworks</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#running_the_website">Running the Website</a></li>
-        <li><a href="#resources">Resources</a></li>
     <li><a href="#troubleshooting">Troubleshooting</a></li>
-
+    <li><a href="#resources">Resources</a></li>
   </ol>
 </details>
 
@@ -79,10 +78,6 @@ Start the frontend:
   ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- Resources -->
-## Resources used in the project
-You can access the assets via Google Drive: https://drive.google.com/drive/folders/1F8u_wM0iy6mErJhwEeLC3bOi7ccVDwkT?usp=sharing  <br>
-
 <!-- Troubleshooting -->
 ## Troubleshooting
 * npm install Fails - Ensure Node.js and npm are installed:
@@ -94,6 +89,10 @@ You can access the assets via Google Drive: https://drive.google.com/drive/folde
 Frontend Not Loading:
 * Verify the backend is running on http://localhost:3000.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Resources -->
+## Resources
+You can access the assets via Google Drive: https://drive.google.com/drive/folders/1F8u_wM0iy6mErJhwEeLC3bOi7ccVDwkT?usp=sharing  <be>
 
 <!-- Contributions -->
 ## Created by
