@@ -25,9 +25,9 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#overview">Overview</a></li>
-    <li><a href="#web_frameworks">Web Frameworks</a></li>
+    <li><a href="#web-frameworks">Web Frameworks</a></li>
     <li><a href="#installation">Installation</a></li>
-    <li><a href="#running_the_Website">Running the Website</a></li>
+    <li><a href="#running-the-website">Running the Website</a></li>
     <li><a href="#troubleshooting">Troubleshooting</a></li>
     <li><a href="#resources">Resources</a></li>
   </ol>
