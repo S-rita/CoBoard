@@ -42,16 +42,23 @@ CoBoard is a forum platform designed for Software Engineering students at King M
 
 <!-- WEB FRAMEWORKS -->
 ## Web Frameworks
-* Backend: FastAPI
-FastAPI handles backend logic with high performance and asynchronous programming, ensuring efficient request handling. It offers automatic API documentation, supports file uploads, and uses CORSMiddleware for secure communication with React.
-* Frontend: React
-React's component-based architecture enables reusable UI elements, with React Router for navigation and state management for dynamic updates. Axios and Fetch handle seamless communication with the backend.
-* Styling: Tailwind CSS
-Tailwind CSS provides utility-first classes for rapid, responsive design. Custom themes ensure a consistent and polished interface across the app.
-* Database: PostgreSQL with SQLAlchemy
-PostgreSQL ensures robust data management with scalability and JSON support, while SQLAlchemy facilitates seamless CRUD operations and schema alignment with FastAPI models.
-* Integration
-FastAPI, SQLAlchemy, PostgreSQL, React, and Tailwind CSS integrate seamlessly, ensuring efficient backend logic, smooth data flow, responsive design, and a cohesive user experience.
+<ul>
+  <li><b>Backend: FastAPI</b> <br />
+  FastAPI handles backend logic with high performance and asynchronous programming, ensuring efficient request handling. It offers automatic API documentation, supports file uploads, and uses CORSMiddleware for secure communication with React.</li>
+  
+  <li><b>Frontend: React</b> <br />
+  React's component-based architecture enables reusable UI elements, with React Router for navigation and state management for dynamic updates. Axios and Fetch handle seamless communication with the backend.</li>
+  
+  <li><b>Styling: Tailwind CSS</b> <br />
+  Tailwind CSS provides utility-first classes for rapid, responsive design. Custom themes ensure a consistent and polished interface across the app.</li>
+  
+  <li><b>Database: PostgreSQL with SQLAlchemy</b> <br />
+  PostgreSQL ensures robust data management with scalability and JSON support, while SQLAlchemy facilitates seamless CRUD operations and schema alignment with FastAPI models.</li>
+  
+  <li><b>Integration</b> <br />
+  FastAPI, SQLAlchemy, PostgreSQL, React, and Tailwind CSS integrate seamlessly, ensuring efficient backend logic, smooth data flow, responsive design, and a cohesive user experience.</li>
+</ul>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 <!-- INSTALLATION -->
@@ -60,8 +67,9 @@ FastAPI, SQLAlchemy, PostgreSQL, React, and Tailwind CSS integrate seamlessly, e
   ```sh
 npm install
   ```
-2. Ensure that npm and PostgreSQL are installed on your computer.
-2. Create tables for database:
+2. Ensure that Node.js and PostgreSQL are installed on your computer.
+3. Create tables for the database:
+4. Change your
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Running the Website -->
