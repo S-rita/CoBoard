@@ -42,15 +42,15 @@ CoBoard is a forum platform designed for Software Engineering students at King M
 
 <!-- WEB FRAMEWORKS -->
 ## Web Frameworks
-*Backend: FastAPI
+* Backend: FastAPI
 FastAPI handles backend logic with high performance and asynchronous programming, ensuring efficient request handling. It offers automatic API documentation, supports file uploads, and uses CORSMiddleware for secure communication with React.
-*Frontend: React
+* Frontend: React
 React's component-based architecture enables reusable UI elements, with React Router for navigation and state management for dynamic updates. Axios and Fetch handle seamless communication with the backend.
-*Styling: Tailwind CSS
+* Styling: Tailwind CSS
 Tailwind CSS provides utility-first classes for rapid, responsive design. Custom themes ensure a consistent and polished interface across the app.
-*Database: PostgreSQL with SQLAlchemy
+* Database: PostgreSQL with SQLAlchemy
 PostgreSQL ensures robust data management with scalability and JSON support, while SQLAlchemy facilitates seamless CRUD operations and schema alignment with FastAPI models.
-*Integration
+* Integration
 FastAPI, SQLAlchemy, PostgreSQL, React, and Tailwind CSS integrate seamlessly, ensuring efficient backend logic, smooth data flow, responsive design, and a cohesive user experience.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
   
