@@ -67,7 +67,7 @@ CoBoard is a forum platform designed for Software Engineering students at King M
   
 <!-- INSTALLATION -->
 ## Installation
-1. Clone or download the game source files.
+1. Clone or download the project source files.
     ```sh
     npm install
     ```
@@ -81,22 +81,22 @@ CoBoard is a forum platform designed for Software Engineering students at King M
    - Run the script using the following command in your terminal (ensure you are connected to your PostgreSQL instance):
        psql -U <username> -d coboard -f path/to/schemas.sql
      Replace <username> with your PostgreSQL username and ensure the file path points to the location of schemas.sql.
-6. Open the server.py file located in the directory named directory. Replace the DATABASE_URL with your PostgreSQL credentials:
+5. Open the server.py file located in the directory named directory. Replace the DATABASE_URL with your PostgreSQL credentials:
 
     ```sh
-    DATABASE_URL = "postgresql://<username>:<password>@<hostname>/<database_name>"
+    DATABASE_URL = "postgresql://<username>:<password>@<hostname>/coboard"
     ```
     Example:
     ```sh
-    DATABASE_URL = "postgresql://admin:adminpassword@localhost/mydatabase"
+    DATABASE_URL = "postgresql://admin:adminpassword@localhost/coboard"
     ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Running the Website -->
 ## Running the Website
-1. Open a terminal and navigate to the game directory.
+1. Open a terminal and navigate to the project directory.
 2. Start the server by running the PostgreSQL in the background.
-3. Run the game using the following command on different terminals:
+3. Run the project using the following command on different terminals:
   ```sh
   uvicorn main:app --reload
   ```
