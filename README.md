@@ -14,12 +14,90 @@
     <a href="https://github.com/S-rita/CoBoard"><strong>Explore the website »</strong></a>
     <br />
     <br />
-    <a href="[https://drive.google.com/file/d/1GP1ge3sabx0YefPhYAnaxp_8LnZK4FVE/view?usp=sharing](https://drive.google.com/file/d/1PcZQyWVcSHfrf6EWLGcHIsE90407ENfR/view?usp=sharing)">View Project Proposal</a>
+    <a href="https://drive.google.com/file/d/1GP1ge3sabx0YefPhYAnaxp_8LnZK4FVE/view?usp=sharing](https://drive.google.com/file/d/1PcZQyWVcSHfrf6EWLGcHIsE90407ENfR/view?usp=sharing)">View Project Proposal</a>
     ·
-    <a href="[https://drive.google.com/file/d/13H1JuaXmO9BBSlrIlJ6MPjIMKE22xkeQ/view?usp=sharing](https://drive.google.com/file/d/1oyPSvoJpw9nYJvPkbLoMyT1JTwiv8Oml/view?usp=sharing)">View Project Report</a>
+    <a href="https://drive.google.com/file/d/13H1JuaXmO9BBSlrIlJ6MPjIMKE22xkeQ/view?usp=sharing](https://drive.google.com/file/d/1oyPSvoJpw9nYJvPkbLoMyT1JTwiv8Oml/view?usp=sharing)">View Project Report</a>
   </p>
 </div>
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#features">Web Frameworks</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#running_the_website">Running the Website</a></li>
+        <li><a href="#resources">Resources</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
 
-Web Programming Project
-Google Drive for assets (images using in the project): https://drive.google.com/drive/folders/1F8u_wM0iy6mErJhwEeLC3bOi7ccVDwkT?usp=sharing  <br>
+  </ol>
+</details>
+
+<!-- OVERVIEW -->
+## Overview
+
+CoBoard is a forum platform designed for Software Engineering students at King Mongkut's Institute of Technology Ladkrabang (KMITL). It combines the structure of traditional forums with the convenience of chat platforms, offering organized spaces for academic and non-academic discussions. Key sections include Admission, Alumni, Student Discussion, Education, and Class Work, each catering to specific needs like networking, resource sharing, or assignment management. With features like room privacy options, structured layouts, and assignment tools, CoBoard fosters a dynamic and efficient communication environment for students and faculty.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- WEB FRAMEWORKS -->
+## Web Frameworks
+*Backend: FastAPI
+FastAPI handles backend logic with high performance and asynchronous programming, ensuring efficient request handling. It offers automatic API documentation, supports file uploads, and uses CORSMiddleware for secure communication with React.
+*Frontend: React
+React's component-based architecture enables reusable UI elements, with React Router for navigation and state management for dynamic updates. Axios and Fetch handle seamless communication with the backend.
+*Styling: Tailwind CSS
+Tailwind CSS provides utility-first classes for rapid, responsive design. Custom themes ensure a consistent and polished interface across the app.
+*Database: PostgreSQL with SQLAlchemy
+PostgreSQL ensures robust data management with scalability and JSON support, while SQLAlchemy facilitates seamless CRUD operations and schema alignment with FastAPI models.
+*Integration
+FastAPI, SQLAlchemy, PostgreSQL, React, and Tailwind CSS integrate seamlessly, ensuring efficient backend logic, smooth data flow, responsive design, and a cohesive user experience.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+  
+<!-- INSTALLATION -->
+## Installation
+1. Clone or download the game source files.
+  ```sh
+npm install
+  ```
+2. Ensure that npm and PostgreSQL are installed on your computer.
+2. Create tables for database:
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Running the Website -->
+## Running the Website
+1. Open a terminal and navigate to the game directory.
+2. Run the game using the following command on different terminals:
+Start the backend:
+  ```sh
+    uvicorn main:app --reload
+  ```
+Start the frontend:
+  ```sh
+    npm start
+  ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Resources -->
+## Resources used in the project
+You can access the assets via Google Drive: https://drive.google.com/drive/folders/1F8u_wM0iy6mErJhwEeLC3bOi7ccVDwkT?usp=sharing  <br>
+
+<!-- Troubleshooting -->
+## Troubleshooting
+* npm install Fails - Ensure Node.js and npm are installed:
+   ```sh
+      node -v
+      npm -v
+   ```
+   If not, install them from Node.js downloads.
+Frontend Not Loading:
+* Verify the backend is running on http://localhost:3000.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Contributions -->
+## Created by
+* Sarita Manopatana
+* Natavee Pecharat
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
