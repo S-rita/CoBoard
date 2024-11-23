@@ -10,7 +10,8 @@
   <h3 align="center">CoBoard</h3>
   <p align="center">
     Sharing experiences, building connections
-    <br />
+  </p>
+  <p align="center">
     <a href="https://github.com/S-rita/CoBoard"><strong>Explore the website »</strong></a>
     <br />
     <br />
