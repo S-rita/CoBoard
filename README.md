@@ -11,7 +11,7 @@
   <p align="center">
     Sharing experiences, building connections
     <br />
-    <a href="https://github.com/S-rita/Chubby_Cat"><strong>Explore the website »</strong></a>
+    <a href="https://github.com/S-rita/CoBoard"><strong>Explore the website »</strong></a>
     <br />
     <br />
     <a href="[https://drive.google.com/file/d/1GP1ge3sabx0YefPhYAnaxp_8LnZK4FVE/view?usp=sharing](https://drive.google.com/file/d/1PcZQyWVcSHfrf6EWLGcHIsE90407ENfR/view?usp=sharing)">View Project Proposal</a>
