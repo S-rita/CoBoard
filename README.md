@@ -15,9 +15,9 @@
     <a href="https://github.com/S-rita/CoBoard"><strong>Explore the website »</strong></a>
     <br />
     <br />
-    <a href="[https://drive.google.com/file/d/1-OpDvFvftw-i_L4UfTFl6QWnnwDE-I3s/view?usp=sharing](https://drive.google.com/file/d/1C8xh2R0DQbozcphDMDDHnWXAbFmpmlBk/view?usp=sharing)">View         Project Proposal</a>
+    <a href="">View         Project Proposal</a>
     ·
-    <a href="https://drive.google.com/file/d/1QTOM3_p4E1gTUPQExEiFeQqRAuhJUP2T/view?usp=sharing">View         Project Report</a>
+    <a href="">View         Project Report</a>
   </p>
 </div>
 
